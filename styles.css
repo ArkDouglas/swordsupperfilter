@@ -479,7 +479,9 @@ input:checked + .slider:before {
     border-radius: 20px;
     font-size: 0.8rem;
     font-weight: 600;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .boss-table .boss-type.boss-rush {

@@ -262,19 +262,6 @@ class BossDatabase {
             iconHtml = '<img src="images/bossicon.png" alt="Boss" class="boss-icon">';
         }
         
-        // Add level range icon if applicable
-        if (boss.level === '41-60') {
-            iconHtml += '<img src="images/4160.png" alt="Level 41-60" class="level-icon">';
-        }
-        
-        // Add mystery icons if they exist
-        if (boss.hasRuinedPath) {
-            iconHtml += '<img src="images/ruinedpath.png" alt="Ruined Path" class="mystery-icon">';
-        }
-        if (boss.hasIncreased) {
-            iconHtml += '<img src="images/increased.png" alt="Increased" class="mystery-icon">';
-        }
-        
         // Difficulty display
         let difficultyDisplay = '';
         if (isBossRush) {
@@ -304,21 +291,25 @@ class BossDatabase {
                         </span>
                     </label>
                 </td>
-                <td>
-                    <div class="${isCompleted ? 'boss-name completed' : 'boss-name'}">
-                        ${iconHtml}${this.escapeHtml(boss.name)}
-                        ${submittedByHtml}
-                    </div>
-                </td>
+                    <td>
+                        <div class="${isCompleted ? 'boss-name completed' : 'boss-name'}">
+                            ${this.escapeHtml(boss.name)}
+                            ${submittedByHtml}
+                        </div>
+                    </td>
                 <td>
                     <span class="boss-level">Level ${boss.level}</span>
                 </td>
                 <td>
                     <div class="boss-difficulty">${difficultyDisplay}</div>
                 </td>
-                <td>
-                    <span class="boss-type">${boss.type}</span>
-                </td>
+                    <td>
+                        <div class="boss-type">
+                            ${iconHtml}${boss.type}
+                            ${boss.hasRuinedPath ? '<img src="images/ruinedpath.png" alt="Ruined Path" class="mystery-icon">' : ''}
+                            ${boss.hasIncreased ? '<img src="images/increased.png" alt="Increased" class="mystery-icon">' : ''}
+                        </div>
+                    </td>
                 <td>
                     <div class="boss-location">${boss.location ? this.escapeHtml(boss.location) : '-'}</div>
                 </td>
