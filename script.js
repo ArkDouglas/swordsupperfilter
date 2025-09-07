@@ -75,6 +75,8 @@ class BossDatabase {
 
         // Item filters
         document.getElementById('itemTypeFilter').addEventListener('change', () => this.filterItems());
+        document.getElementById('itemRarityFilter').addEventListener('change', () => this.filterItems());
+        document.getElementById('itemPropertyFilter').addEventListener('change', () => this.filterItems());
         document.getElementById('itemSearchInput').addEventListener('input', (e) => this.searchItems(e.target.value));
 
         // Ability categories
@@ -560,28 +562,74 @@ class BossDatabase {
                     <span class="item-type">${item.type}</span>
                 </div>
                 
-                ${item.image ? `<img src="${item.image}" alt="${item.name}" class="item-image">` : ''}
+                ${item.imageUrl ? `<img src="${item.imageUrl}" alt="${item.name}" class="item-image">` : ''}
                 
                 <div class="item-description">${this.escapeHtml(item.description)}</div>
                 
-                ${item.stats ? `<div class="item-stats">${this.escapeHtml(item.stats)}</div>` : ''}
+                ${item.goldValue ? `<div class="item-gold-value">💰 ${item.goldValue} Gold</div>` : ''}
+                
+                ${this.renderItemProperties(item)}
                 
                 ${item.source ? `<div class="item-source">Source: ${this.escapeHtml(item.source)}</div>` : ''}
             </div>
         `).join('');
     }
 
+    renderItemProperties(item) {
+        const properties = [];
+        if (item.crit && item.crit > 0) properties.push({ name: 'Crit', value: `${item.crit}%` });
+        if (item.dodge && item.dodge > 0) properties.push({ name: 'Dodge', value: `${item.dodge}%` });
+        if (item.fireResist && item.fireResist > 0) properties.push({ name: 'Fire Resist', value: `${item.fireResist}%` });
+        if (item.elecResist && item.elecResist > 0) properties.push({ name: 'Electric Resist', value: `${item.elecResist}%` });
+
+        if (properties.length === 0) return '';
+
+        return `
+            <div class="item-properties">
+                <div class="property-list">
+                    ${properties.map(prop => `
+                        <div class="property-item">
+                            <span class="property-name">${prop.name}</span>
+                            <span class="property-value">${prop.value}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+
     filterItems() {
         const typeFilter = document.getElementById('itemTypeFilter').value;
+        const rarityFilter = document.getElementById('itemRarityFilter').value;
+        const propertyFilter = document.getElementById('itemPropertyFilter').value;
         const searchTerm = document.getElementById('itemSearchInput').value.toLowerCase();
 
         this.filteredItems = this.items.filter(item => {
             const typeMatch = !typeFilter || item.type === typeFilter;
+            const rarityMatch = !rarityFilter || item.rarity === rarityFilter;
             const searchMatch = !searchTerm || 
                 item.name.toLowerCase().includes(searchTerm) ||
                 item.description.toLowerCase().includes(searchTerm);
             
-            return typeMatch && searchMatch;
+            let propertyMatch = true;
+            if (propertyFilter) {
+                switch (propertyFilter) {
+                    case 'crit':
+                        propertyMatch = item.crit && item.crit > 0;
+                        break;
+                    case 'dodge':
+                        propertyMatch = item.dodge && item.dodge > 0;
+                        break;
+                    case 'fireResist':
+                        propertyMatch = item.fireResist && item.fireResist > 0;
+                        break;
+                    case 'elecResist':
+                        propertyMatch = item.elecResist && item.elecResist > 0;
+                        break;
+                }
+            }
+            
+            return typeMatch && rarityMatch && searchMatch && propertyMatch;
         });
         this.renderItems();
     }
@@ -610,15 +658,19 @@ class BossDatabase {
             type: document.getElementById('itemType').value,
             rarity: document.getElementById('itemRarity').value,
             description: document.getElementById('itemDescription').value,
-            stats: document.getElementById('itemStats').value,
+            imageUrl: document.getElementById('itemImageUrl').value,
+            goldValue: document.getElementById('itemGoldValue').value ? parseInt(document.getElementById('itemGoldValue').value) : null,
+            crit: document.getElementById('itemCrit').value ? parseFloat(document.getElementById('itemCrit').value) : null,
+            dodge: document.getElementById('itemDodge').value ? parseFloat(document.getElementById('itemDodge').value) : null,
+            fireResist: document.getElementById('itemFireResist').value ? parseFloat(document.getElementById('itemFireResist').value) : null,
+            elecResist: document.getElementById('itemElecResist').value ? parseFloat(document.getElementById('itemElecResist').value) : null,
             source: document.getElementById('itemSource').value,
-            image: null, // Will be handled separately for file uploads
             dateAdded: new Date().toISOString().split('T')[0]
         };
 
         // Validate required fields
-        if (!newItem.name || !newItem.type || !newItem.description) {
-            this.showMessage('Please fill in all required fields.', 'error');
+        if (!newItem.name || !newItem.type || !newItem.description || !newItem.rarity) {
+            this.showMessage('Please fill in all required fields (Name, Type, Description, Rarity).', 'error');
             return;
         }
 
