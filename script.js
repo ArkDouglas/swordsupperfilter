@@ -23,6 +23,7 @@ class BossDatabase {
         this.initializeItems();
         this.loadItemsFromLocalStorage();
         this.loadLevelGoldFromLocalStorage();
+        this.checkGitHubLoginStatus();
     }
 
     async loadData() {
@@ -924,6 +925,36 @@ This instance was submitted through the website and should be added to the datab
         window.open(issueUrl, '_blank');
         
         this.showMessage('GitHub issue opened! Please submit it to add this instance to the community database.', 'info');
+    }
+
+    checkGitHubLoginStatus() {
+        // Check if user is logged into GitHub by trying to access their profile
+        fetch('https://api.github.com/user', {
+            credentials: 'include'
+        })
+        .then(response => {
+            if (response.ok) {
+                this.updateLoginStatus(true);
+            } else {
+                this.updateLoginStatus(false);
+            }
+        })
+        .catch(() => {
+            this.updateLoginStatus(false);
+        });
+    }
+
+    updateLoginStatus(isLoggedIn) {
+        const loginStatus = document.getElementById('githubLoginStatus');
+        const loginText = document.getElementById('loginText');
+        
+        if (isLoggedIn) {
+            loginStatus.classList.add('logged-in');
+            loginText.textContent = 'Logged in to GitHub';
+        } else {
+            loginStatus.classList.remove('logged-in');
+            loginText.textContent = 'Login with GitHub';
+        }
     }
 
     saveItemsToLocalStorage() {

@@ -27,8 +27,54 @@ body {
     background-repeat: no-repeat;
     color: white;
     padding: 2rem 0;
-    text-align: center;
     backdrop-filter: blur(10px);
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: left;
+}
+
+.header-left {
+    flex: 1;
+}
+
+.header-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.5rem;
+}
+
+.github-status {
+    margin-bottom: 0.5rem;
+}
+
+.login-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.login-status:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.login-status.logged-in {
+    background: rgba(40, 167, 69, 0.3);
+    border: 1px solid rgba(40, 167, 69, 0.5);
+}
+
+.login-status.logged-in:hover {
+    background: rgba(40, 167, 69, 0.4);
 }
 
 .header h1 {
