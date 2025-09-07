@@ -70,6 +70,7 @@ class BossDatabase {
 
         // Add item functionality
         document.getElementById('addItemBtn').addEventListener('click', () => this.openItemModal());
+        document.getElementById('contributeItemBtn').addEventListener('click', () => this.openItemModal());
         document.getElementById('addItemForm').addEventListener('submit', (e) => this.handleAddItem(e));
         document.getElementById('cancelItemBtn').addEventListener('click', () => this.closeItemModal());
 

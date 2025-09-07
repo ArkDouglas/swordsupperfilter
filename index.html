@@ -179,19 +179,16 @@
                     <p>Equipment, consumables, and other items in Sword and Supper</p>
                 </section>
                 
-                <!-- Image Guide -->
-                <div class="guide-section">
-                    <h3><i class="fas fa-info-circle"></i> How to Get Item Images</h3>
-                    <div class="guide-content">
-                        <p>To add item images to the database:</p>
-                        <ol>
-                            <li>Right-click on any item in the game</li>
-                            <li>Select "Copy image link" or "Copy image address"</li>
-                            <li>Paste the link in the "Item Image URL" field when adding items</li>
-                        </ol>
-                        <div class="guide-image">
-                            <img src="images/copy-item-image-link.png" alt="How to copy item image link" class="guide-screenshot">
-                            <p class="guide-caption">Right-click on items and select "Copy image link"</p>
+                <!-- Community Contribution Call -->
+                <div class="contribution-section">
+                    <h3><i class="fas fa-heart"></i> Help Build the Database!</h3>
+                    <div class="contribution-content">
+                        <p>This database is built by the community, for the community! Every item, boss, and ability entry helps fellow players discover new content.</p>
+                        <div class="contribution-actions">
+                            <button class="btn btn-primary" id="contributeItemBtn">
+                                <i class="fas fa-plus"></i> Add New Item
+                            </button>
+                            <p class="contribution-note">Click "Add New Item" to contribute to the database and help other players!</p>
                         </div>
                     </div>
                 </div>
@@ -419,6 +416,23 @@
                 <h2>Add New Item</h2>
                 <span class="close">&times;</span>
             </div>
+            
+            <!-- Image Guide in Modal -->
+            <div class="modal-guide">
+                <h4><i class="fas fa-info-circle"></i> How to Get Item Images</h4>
+                <div class="guide-steps">
+                    <ol>
+                        <li>Right-click on any item in the game</li>
+                        <li>Select "Copy image link" or "Copy image address"</li>
+                        <li>Paste the link in the "Item Image URL" field below</li>
+                    </ol>
+                    <div class="guide-image-small">
+                        <img src="images/copy-item-image-link.png" alt="How to copy item image link" class="guide-screenshot-small">
+                        <p class="guide-caption-small">Right-click on items and select "Copy image link"</p>
+                    </div>
+                </div>
+            </div>
+            
             <form id="addItemForm">
                 <div class="form-group">
                     <label for="itemName">Item Name *</label>
