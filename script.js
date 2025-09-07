@@ -399,10 +399,13 @@ class BossDatabase {
         this.updateStats();
         this.closeModal();
         
-        this.showMessage('Boss added successfully!', 'success');
+        this.showMessage('Instance added locally! Submitting to database...', 'success');
         
         // Save to localStorage for persistence
         this.saveToLocalStorage();
+        
+        // Submit to GitHub for community persistence
+        this.submitInstanceToGitHub(newBoss);
     }
 
     editBoss(id) {
@@ -889,6 +892,39 @@ This item was submitted through the website and should be added to the database.
         window.open(issueUrl, '_blank');
         
         this.showMessage('Item saved locally! Please submit via the GitHub issue that opened.', 'success');
+    }
+
+    submitInstanceToGitHub(instance) {
+        // Create a GitHub issue URL with the instance data
+        const issueTitle = `Add new instance: ${instance.name}`;
+        const issueBody = `## New Instance Submission
+
+**Instance Name:** ${instance.name}
+**Level:** ${instance.level}
+**Difficulty:** ${instance.difficulty}
+**Instance Type:** ${instance.instanceType}
+**Type:** ${instance.type}
+**Location:** ${instance.location || 'None provided'}
+**Reddit Link:** ${instance.redditLink || 'None provided'}
+**Submitted By:** ${instance.submittedBy || 'Anonymous'}
+
+### Special Properties:
+- **Has Ruined Path:** ${instance.hasRuinedPath ? 'Yes' : 'No'}
+- **Has Increased:** ${instance.hasIncreased ? 'Yes' : 'No'}
+
+### JSON Data:
+\`\`\`json
+${JSON.stringify(instance, null, 2)}
+\`\`\`
+
+This instance was submitted through the website and should be added to the database.`;
+
+        const issueUrl = `https://github.com/ArkDouglas/swordsupperfilter/issues/new?title=${encodeURIComponent(issueTitle)}&body=${encodeURIComponent(issueBody)}&labels=instance-submission`;
+        
+        // Open the GitHub issue creation page
+        window.open(issueUrl, '_blank');
+        
+        this.showMessage('Instance saved locally! Please submit via the GitHub issue that opened.', 'success');
     }
 
     saveItemsToLocalStorage() {
