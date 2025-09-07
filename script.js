@@ -255,7 +255,7 @@ class BossDatabase {
     createBossRow(boss) {
         const isCompleted = this.completedBosses.has(boss.id);
         const isBossRush = boss.difficulty === 'boss-rush';
-        const isBoss = boss.instanceType === 'boss';
+        const isBoss = boss.instanceType === 'boss' || boss.type === 'boss';
         
         // Get appropriate icon - only show boss icon for actual bosses
         let iconHtml = '';
@@ -955,6 +955,61 @@ This instance was submitted through the website and should be added to the datab
             loginStatus.classList.remove('logged-in');
             loginText.textContent = 'Login with GitHub';
         }
+    }
+
+    async submitInstanceToDatabase(instance) {
+        try {
+            // Submit directly to the database via GitHub API
+            const response = await fetch('https://api.github.com/repos/ArkDouglas/swordsupperfilter/contents/data.json', {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch current data');
+            }
+
+            const data = await response.json();
+            const currentContent = JSON.parse(atob(data.content));
+            
+            // Add the new instance
+            currentContent.bosses.push(instance);
+            
+            // Update the file
+            const updateResponse = await fetch('https://api.github.com/repos/ArkDouglas/swordsupperfilter/contents/data.json', {
+                method: 'PUT',
+                headers: {
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Authorization': `token ${this.getGitHubToken()}`
+                },
+                body: JSON.stringify({
+                    message: `Add new instance: ${instance.name}`,
+                    content: btoa(JSON.stringify(currentContent, null, 2)),
+                    sha: data.sha
+                })
+            });
+
+            if (updateResponse.ok) {
+                this.showMessage('Instance added to community database!', 'success');
+                // Refresh the data
+                await this.loadData();
+                this.renderBosses();
+                this.updateStats();
+            } else {
+                throw new Error('Failed to update database');
+            }
+        } catch (error) {
+            console.error('Error submitting instance:', error);
+            this.showMessage('Failed to submit instance. Please try again.', 'error');
+        }
+    }
+
+    getGitHubToken() {
+        // This would need to be set up as a GitHub App or use a different approach
+        // For now, we'll use a different method
+        return null;
     }
 
     saveItemsToLocalStorage() {
