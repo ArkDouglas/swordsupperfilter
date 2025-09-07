@@ -370,6 +370,7 @@ class BossDatabase {
 
     handleAddBoss(e) {
         e.preventDefault();
+        console.log('handleAddBoss called'); // Debug log
         
         const formData = new FormData(e.target);
         const newBoss = {
@@ -387,8 +388,11 @@ class BossDatabase {
             dateAdded: new Date().toISOString().split('T')[0]
         };
 
+        console.log('New boss data:', newBoss); // Debug log
+
         // Validate required fields
         if (!newBoss.name || !newBoss.level || !newBoss.difficulty || !newBoss.instanceType) {
+            console.log('Validation failed:', {name: newBoss.name, level: newBoss.level, difficulty: newBoss.difficulty, instanceType: newBoss.instanceType}); // Debug log
             this.showMessage('Please fill in all required fields.', 'error');
             return;
         }
