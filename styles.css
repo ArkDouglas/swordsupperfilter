@@ -781,52 +781,40 @@ input:checked + .slider:before {
 
 /* Contribution Section */
 .contribution-section {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border-radius: 15px;
-    padding: 2rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
     margin-bottom: 2rem;
     text-align: center;
+    border-left: 4px solid #667eea;
 }
 
-.contribution-section h3 {
-    color: white;
-    margin-bottom: 1rem;
-    font-size: 1.5rem;
-}
-
-.contribution-content p {
-    color: rgba(255, 255, 255, 0.9);
-    margin-bottom: 1.5rem;
-    font-size: 1.1rem;
-}
-
-.contribution-actions {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-}
-
-.contribution-note {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 0.9rem;
-    font-style: italic;
+.contribution-section p {
     margin: 0;
+    color: #666;
+    font-size: 1rem;
+}
+
+.btn-inline {
+    display: inline-block;
+    margin-left: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
 }
 
 /* Community Resources Section */
 .community-resources {
-    background: white;
-    border-radius: 15px;
-    padding: 2rem;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.5rem;
     margin-bottom: 2rem;
+    border-left: 4px solid #667eea;
 }
 
 .community-resources h3 {
     color: #333;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
+    font-size: 1.2rem;
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -834,8 +822,9 @@ input:checked + .slider:before {
 
 .community-resources p {
     color: #666;
-    margin-bottom: 1.5rem;
-    line-height: 1.6;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+    font-size: 0.95rem;
 }
 
 .resource-links {
