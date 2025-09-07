@@ -42,6 +42,7 @@ class BossDatabase {
         document.getElementById('difficultyFilter').addEventListener('change', (e) => this.handleFilter());
         document.getElementById('typeFilter').addEventListener('change', (e) => this.handleFilter());
         document.getElementById('completionFilter').addEventListener('change', (e) => this.handleFilter());
+        document.getElementById('hideCompletedToggle').addEventListener('change', (e) => this.handleFilter());
 
         // Sort functionality
         document.getElementById('sortBy').addEventListener('change', (e) => {
@@ -123,6 +124,7 @@ class BossDatabase {
         const difficultyFilter = document.getElementById('difficultyFilter').value;
         const typeFilter = document.getElementById('typeFilter').value;
         const completionFilter = document.getElementById('completionFilter').value;
+        const hideCompleted = document.getElementById('hideCompletedToggle').checked;
 
         this.filteredBosses = this.bosses.filter(boss => {
             const levelMatch = !levelFilter || boss.level === levelFilter;
@@ -132,7 +134,10 @@ class BossDatabase {
                 (completionFilter === 'completed' && this.completedBosses.has(boss.id)) ||
                 (completionFilter === 'incomplete' && !this.completedBosses.has(boss.id));
             
-            return levelMatch && difficultyMatch && typeMatch && completionMatch;
+            // Hide completed bosses if toggle is on
+            const hideMatch = !hideCompleted || !this.completedBosses.has(boss.id);
+            
+            return levelMatch && difficultyMatch && typeMatch && completionMatch && hideMatch;
         });
 
         this.sortBosses();
@@ -140,6 +145,15 @@ class BossDatabase {
 
     sortBosses() {
         this.filteredBosses.sort((a, b) => {
+            // First, sort by completion status (completed bosses go to bottom)
+            const aCompleted = this.completedBosses.has(a.id);
+            const bCompleted = this.completedBosses.has(b.id);
+            
+            if (aCompleted !== bCompleted) {
+                return aCompleted ? 1 : -1; // Completed bosses go to bottom
+            }
+
+            // Then sort by the selected criteria
             let aValue, bValue;
 
             switch (this.currentSort) {

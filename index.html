@@ -90,7 +90,7 @@
                         <i class="fas fa-plus"></i> Add New Boss
                     </button>
                     
-                    <button class="btn btn-secondary" id="clearCompletionsBtn" title="Clear all completion marks">
+                    <button class="btn btn-danger btn-hidden" id="clearCompletionsBtn" title="Clear all completion marks" style="display: none;">
                         <i class="fas fa-eraser"></i> Clear Completions
                     </button>
                     
@@ -126,6 +126,13 @@
                 <div class="stat-card">
                     <h3 id="completionRate">0%</h3>
                     <p>Completion Rate</p>
+                </div>
+                <div class="hide-completed-toggle">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="hideCompletedToggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                    <span class="toggle-label">Hide Completed</span>
                 </div>
             </section>
 
