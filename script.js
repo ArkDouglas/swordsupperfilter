@@ -23,6 +23,7 @@ class BossDatabase {
         this.initializeItems();
         this.loadItemsFromLocalStorage();
         this.loadLevelGoldFromLocalStorage();
+        this.checkGitHubStatus();
     }
 
     async loadData() {
@@ -978,9 +979,6 @@ This instance was submitted through the website and should be added to the datab
 
     async submitInstanceToPublicDatabase(instance) {
         try {
-            // For now, we'll use a webhook approach or GitHub Issues
-            // Since direct API writing requires authentication
-            
             // Create a GitHub issue with the instance data
             const issueTitle = `New Instance: ${instance.name}`;
             const issueBody = `**Instance Data:**
@@ -998,8 +996,7 @@ This instance should be added to the database.`;
             // Open the GitHub issue
             window.open(issueUrl, '_blank');
             
-            // For now, add to local display so user sees it immediately
-            // This will be replaced when the issue is processed
+            // Add to local display so user sees it immediately
             this.bosses.push(instance);
             this.filteredBosses = [...this.bosses];
             this.sortBosses();
@@ -1012,6 +1009,20 @@ This instance should be added to the database.`;
         }
     }
 
+    checkGitHubStatus() {
+        // Since we can't reliably check GitHub login status from client-side,
+        // we'll show a generic status that encourages login
+        this.updateGitHubStatus(false);
+    }
+
+    updateGitHubStatus(isLoggedIn) {
+        const statusElement = document.getElementById('githubStatus');
+        const statusText = document.getElementById('githubStatusText');
+        
+        // Always show login option since we can't reliably check status
+        statusElement.classList.remove('logged-in');
+        statusText.textContent = 'Login to GitHub';
+    }
 
     saveItemsToLocalStorage() {
         try {
@@ -1131,6 +1142,22 @@ This instance should be added to the database.`;
         } catch (error) {
             console.error('Error loading level/gold from localStorage:', error);
         }
+    }
+}
+
+// Global function for GitHub login
+function handleGitHubLogin() {
+    const message = `To contribute to the database, you'll need a GitHub account (it's free!).
+
+Click OK to:
+1. Go to GitHub.com
+2. Log in or create a free account
+3. Come back here to contribute
+
+GitHub is where developers share code and collaborate on projects.`;
+    
+    if (confirm(message)) {
+        window.open('https://github.com/login', '_blank');
     }
 }
 
