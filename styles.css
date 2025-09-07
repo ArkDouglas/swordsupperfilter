@@ -47,6 +47,17 @@ body {
     object-fit: contain;
 }
 
+.header-link {
+    color: white;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.header-link:hover {
+    color: #ffc107;
+    text-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
+}
+
 .header p {
     font-size: 1.1rem;
     opacity: 0.9;
@@ -925,6 +936,11 @@ body {
 }
 
 /* FAQ Section */
+.faq-full-link {
+    margin-top: 1rem;
+    text-align: center;
+}
+
 .faq-container {
     background: white;
     border-radius: 15px;
