@@ -254,9 +254,6 @@ class BossDatabase {
                         <button class="btn btn-small btn-secondary" onclick="bossDB.editBoss(${boss.id})">
                             <i class="fas fa-edit"></i>
                         </button>
-                        <button class="btn btn-small btn-secondary" onclick="bossDB.deleteBoss(${boss.id})">
-                            <i class="fas fa-trash"></i>
-                        </button>
                     </div>
                 </td>
             </tr>
@@ -347,16 +344,6 @@ class BossDatabase {
         this.openModal();
     }
 
-    deleteBoss(id) {
-        if (confirm('Are you sure you want to delete this boss?')) {
-            this.bosses = this.bosses.filter(boss => boss.id !== id);
-            this.filteredBosses = [...this.bosses];
-            this.renderBosses();
-            this.updateStats();
-            this.saveToLocalStorage();
-            this.showMessage('Boss deleted successfully!', 'success');
-        }
-    }
 
     saveToLocalStorage() {
         try {
@@ -665,7 +652,8 @@ class BossDatabase {
             fireResist: document.getElementById('itemFireResist').value ? parseFloat(document.getElementById('itemFireResist').value) : null,
             elecResist: document.getElementById('itemElecResist').value ? parseFloat(document.getElementById('itemElecResist').value) : null,
             source: document.getElementById('itemSource').value,
-            dateAdded: new Date().toISOString().split('T')[0]
+            dateAdded: new Date().toISOString().split('T')[0],
+            submittedBy: 'Website User'
         };
 
         // Validate required fields
@@ -674,15 +662,53 @@ class BossDatabase {
             return;
         }
 
+        // Add to local display immediately
         this.items.push(newItem);
         this.filteredItems = [...this.items];
         this.renderItems();
         this.closeItemModal();
         
-        this.showMessage('Item added successfully!', 'success');
+        this.showMessage('Item added locally! Submitting to database...', 'success');
         
         // Save to localStorage
         this.saveItemsToLocalStorage();
+        
+        // Submit to GitHub for permanent storage
+        this.submitItemToGitHub(newItem);
+    }
+
+    submitItemToGitHub(item) {
+        // Create a GitHub issue URL with the item data
+        const issueTitle = `Add new item: ${item.name}`;
+        const issueBody = `## New Item Submission
+
+**Item Name:** ${item.name}
+**Type:** ${item.type}
+**Rarity:** ${item.rarity}
+**Description:** ${item.description}
+**Image URL:** ${item.imageUrl || 'None provided'}
+**Gold Value:** ${item.goldValue || 'None'}
+**Source:** ${item.source || 'None provided'}
+
+### Properties:
+- **Crit %:** ${item.crit || 0}
+- **Dodge %:** ${item.dodge || 0}
+- **Fire Resist %:** ${item.fireResist || 0}
+- **Electric Resist %:** ${item.elecResist || 0}
+
+### JSON Data:
+\`\`\`json
+${JSON.stringify(item, null, 2)}
+\`\`\`
+
+This item was submitted through the website and should be added to the database.`;
+
+        const issueUrl = `https://github.com/ArkDouglas/swordsupperfilter/issues/new?title=${encodeURIComponent(issueTitle)}&body=${encodeURIComponent(issueBody)}&labels=item-submission`;
+        
+        // Open the GitHub issue creation page
+        window.open(issueUrl, '_blank');
+        
+        this.showMessage('Item saved locally! Please submit via the GitHub issue that opened.', 'success');
     }
 
     saveItemsToLocalStorage() {
