@@ -993,8 +993,8 @@ This instance should be added to the database.`;
             
             const issueUrl = `https://github.com/ArkDouglas/swordsupperfilter/issues/new?title=${encodeURIComponent(issueTitle)}&body=${encodeURIComponent(issueBody)}&labels=instance-submission`;
             
-            // Open the GitHub issue
-            window.open(issueUrl, '_blank');
+            // Open the GitHub issue in modal
+            this.openGitHubModal(issueUrl);
             
             // Add to local display so user sees it immediately
             this.bosses.push(instance);
@@ -1022,6 +1022,20 @@ This instance should be added to the database.`;
         // Always show login option since we can't reliably check status
         statusElement.classList.remove('logged-in');
         statusText.textContent = 'Login to GitHub';
+    }
+
+    openGitHubModal(issueUrl) {
+        const modal = document.getElementById('githubModal');
+        const iframe = document.getElementById('githubIframe');
+        iframe.src = issueUrl;
+        modal.style.display = 'block';
+    }
+
+    closeGitHubModal() {
+        const modal = document.getElementById('githubModal');
+        const iframe = document.getElementById('githubIframe');
+        modal.style.display = 'none';
+        iframe.src = ''; // Clear the iframe
     }
 
     saveItemsToLocalStorage() {
@@ -1158,6 +1172,13 @@ GitHub is where developers share code and collaborate on projects.`;
     
     if (confirm(message)) {
         window.open('https://github.com/login', '_blank');
+    }
+}
+
+// Global function for closing GitHub modal
+function closeGitHubModal() {
+    if (window.bossDB) {
+        window.bossDB.closeGitHubModal();
     }
 }
 
