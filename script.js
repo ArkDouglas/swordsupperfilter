@@ -895,33 +895,9 @@ This item was submitted through the website and should be added to the database.
     }
 
     async submitInstanceToDatabase(instance) {
-        try {
-            // Use GitHub's repository dispatch API to trigger the workflow
-            const response = await fetch('https://api.github.com/repos/ArkDouglas/swordsupperfilter/dispatches', {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/vnd.github.v3+json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    event_type: 'add-instance',
-                    client_payload: {
-                        instance: instance,
-                        timestamp: new Date().toISOString()
-                    }
-                })
-            });
-
-            if (response.ok) {
-                this.showMessage('Instance submitted to database successfully!', 'success');
-            } else {
-                throw new Error('Failed to submit to database');
-            }
-        } catch (error) {
-            console.error('Error submitting instance:', error);
-            // Fallback to GitHub Issues approach
-            this.submitInstanceToGitHub(instance);
-        }
+        // Since GitHub's API requires authentication, we'll use the Issues approach
+        // which opens a pre-filled GitHub issue that users can submit
+        this.submitInstanceToGitHub(instance);
     }
 
     submitInstanceToGitHub(instance) {
@@ -954,7 +930,7 @@ This instance was submitted through the website and should be added to the datab
         // Open the GitHub issue creation page
         window.open(issueUrl, '_blank');
         
-        this.showMessage('Instance saved locally! Please submit via the GitHub issue that opened.', 'info');
+        this.showMessage('Instance saved locally! A GitHub issue has opened - please submit it to add to the database.', 'info');
     }
 
     saveItemsToLocalStorage() {
