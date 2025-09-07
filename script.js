@@ -358,6 +358,16 @@ class BossDatabase {
         document.getElementById('hasIncreased').checked = false;
     }
 
+    generateType(instanceType, difficulty) {
+        if (difficulty === 'boss-rush') {
+            return 'Boss Rush';
+        } else if (instanceType === 'boss') {
+            return 'Regular Boss';
+        } else {
+            return 'Normal Instance';
+        }
+    }
+
     handleAddBoss(e) {
         e.preventDefault();
         
@@ -368,7 +378,7 @@ class BossDatabase {
             level: document.getElementById('bossLevel').value,
             difficulty: document.getElementById('bossDifficulty').value,
             instanceType: document.getElementById('bossInstanceType').value,
-            type: document.getElementById('bossType').value,
+            type: this.generateType(document.getElementById('bossInstanceType').value, document.getElementById('bossDifficulty').value),
             location: document.getElementById('bossLocation').value,
             redditLink: document.getElementById('bossRedditLink').value,
             submittedBy: document.getElementById('bossSubmittedBy').value,
@@ -378,7 +388,7 @@ class BossDatabase {
         };
 
         // Validate required fields
-        if (!newBoss.name || !newBoss.level || !newBoss.difficulty || !newBoss.instanceType || !newBoss.type) {
+        if (!newBoss.name || !newBoss.level || !newBoss.difficulty || !newBoss.instanceType) {
             this.showMessage('Please fill in all required fields.', 'error');
             return;
         }
@@ -404,7 +414,6 @@ class BossDatabase {
         document.getElementById('bossLevel').value = boss.level;
         document.getElementById('bossDifficulty').value = boss.difficulty;
         document.getElementById('bossInstanceType').value = boss.instanceType || '';
-        document.getElementById('bossType').value = boss.type;
         document.getElementById('bossLocation').value = boss.location || '';
         document.getElementById('bossRedditLink').value = boss.redditLink || '';
         document.getElementById('bossSubmittedBy').value = boss.submittedBy || '';
