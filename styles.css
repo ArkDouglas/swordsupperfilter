@@ -1141,6 +1141,41 @@ input:checked + .slider:before {
     text-decoration: underline;
 }
 
+/* Mystery Icons */
+.mystery-icons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.mystery-icon-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+}
+
+.mystery-icon-checkbox:hover {
+    background-color: #f8f9fa;
+}
+
+.mystery-icon-checkbox input[type="checkbox"] {
+    margin: 0;
+}
+
+.mystery-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.mystery-icon-checkbox span {
+    font-size: 0.9rem;
+    color: #555;
+}
+
 /* FAQ Section */
 .faq-full-link {
     margin-top: 1rem;

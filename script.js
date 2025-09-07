@@ -46,6 +46,7 @@ class BossDatabase {
         document.getElementById('levelFilter').addEventListener('change', (e) => this.handleFilter());
         document.getElementById('difficultyFilter').addEventListener('change', (e) => this.handleFilter());
         document.getElementById('typeFilter').addEventListener('change', (e) => this.handleFilter());
+        document.getElementById('mysteryIconFilter').addEventListener('change', (e) => this.handleFilter());
         document.getElementById('completionFilter').addEventListener('change', (e) => this.handleFilter());
         document.getElementById('hideCompletedToggle').addEventListener('change', (e) => this.handleFilter());
 
@@ -133,6 +134,7 @@ class BossDatabase {
         const levelFilter = document.getElementById('levelFilter').value;
         const difficultyFilter = document.getElementById('difficultyFilter').value;
         const typeFilter = document.getElementById('typeFilter').value;
+        const mysteryIconFilter = document.getElementById('mysteryIconFilter').value;
         const completionFilter = document.getElementById('completionFilter').value;
         const hideCompleted = document.getElementById('hideCompletedToggle').checked;
 
@@ -144,10 +146,20 @@ class BossDatabase {
                 (completionFilter === 'completed' && this.completedBosses.has(boss.id)) ||
                 (completionFilter === 'incomplete' && !this.completedBosses.has(boss.id));
             
+            // Mystery icon filter
+            let mysteryMatch = true;
+            if (mysteryIconFilter) {
+                if (mysteryIconFilter === 'ruined-path') {
+                    mysteryMatch = boss.hasRuinedPath || false;
+                } else if (mysteryIconFilter === 'increased') {
+                    mysteryMatch = boss.hasIncreased || false;
+                }
+            }
+            
             // Hide completed bosses if toggle is on
             const hideMatch = !hideCompleted || !this.completedBosses.has(boss.id);
             
-            return levelMatch && difficultyMatch && typeMatch && completionMatch && hideMatch;
+            return levelMatch && difficultyMatch && typeMatch && completionMatch && mysteryMatch && hideMatch;
         });
 
         this.sortBosses();
@@ -244,17 +256,23 @@ class BossDatabase {
         const isBossRush = boss.difficulty === 'boss-rush';
         const isBoss = boss.instanceType === 'boss';
         
-        // Get appropriate icon
+        // Get appropriate icon - only show boss icon for actual bosses
         let iconHtml = '';
         if (isBoss) {
             iconHtml = '<img src="images/bossicon.png" alt="Boss" class="boss-icon">';
-        } else {
-            iconHtml = '<img src="images/itemicon.png" alt="Instance" class="instance-icon">';
         }
         
         // Add level range icon if applicable
         if (boss.level === '41-60') {
             iconHtml += '<img src="images/4160.png" alt="Level 41-60" class="level-icon">';
+        }
+        
+        // Add mystery icons if they exist
+        if (boss.hasRuinedPath) {
+            iconHtml += '<img src="images/ruinedpath.png" alt="Ruined Path" class="mystery-icon">';
+        }
+        if (boss.hasIncreased) {
+            iconHtml += '<img src="images/increased.png" alt="Increased" class="mystery-icon">';
         }
         
         // Difficulty display
@@ -345,6 +363,8 @@ class BossDatabase {
         document.getElementById('addBossModal').style.display = 'none';
         document.body.style.overflow = 'auto';
         document.getElementById('addBossForm').reset();
+        document.getElementById('hasRuinedPath').checked = false;
+        document.getElementById('hasIncreased').checked = false;
     }
 
     handleAddBoss(e) {
@@ -361,6 +381,8 @@ class BossDatabase {
             location: document.getElementById('bossLocation').value,
             redditLink: document.getElementById('bossRedditLink').value,
             submittedBy: document.getElementById('bossSubmittedBy').value,
+            hasRuinedPath: document.getElementById('hasRuinedPath').checked,
+            hasIncreased: document.getElementById('hasIncreased').checked,
             dateAdded: new Date().toISOString().split('T')[0]
         };
 
@@ -390,14 +412,18 @@ class BossDatabase {
         document.getElementById('bossName').value = boss.name;
         document.getElementById('bossLevel').value = boss.level;
         document.getElementById('bossDifficulty').value = boss.difficulty;
+        document.getElementById('bossInstanceType').value = boss.instanceType || '';
         document.getElementById('bossType').value = boss.type;
         document.getElementById('bossLocation').value = boss.location || '';
         document.getElementById('bossRedditLink').value = boss.redditLink || '';
+        document.getElementById('bossSubmittedBy').value = boss.submittedBy || '';
+        document.getElementById('hasRuinedPath').checked = boss.hasRuinedPath || false;
+        document.getElementById('hasIncreased').checked = boss.hasIncreased || false;
 
         // Change form to edit mode
         const form = document.getElementById('addBossForm');
         form.dataset.editId = id;
-        document.querySelector('.modal-header h2').textContent = 'Edit Boss';
+        document.querySelector('.modal-header h2').textContent = 'Edit Instance';
         
         this.openModal();
     }

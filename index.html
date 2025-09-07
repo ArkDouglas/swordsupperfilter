@@ -77,6 +77,12 @@
                             <option value="boss-rush">Boss Rush</option>
                         </select>
                         
+                        <select id="mysteryIconFilter">
+                            <option value="">All Properties</option>
+                            <option value="ruined-path">Has Ruined Path</option>
+                            <option value="increased">Has Increased</option>
+                        </select>
+                        
                         <select id="completionFilter">
                             <option value="">All Bosses</option>
                             <option value="completed">Completed</option>
@@ -87,7 +93,7 @@
                 
                 <div class="sort-controls">
                     <button class="btn btn-primary" id="addBossBtn">
-                        <i class="fas fa-plus"></i> Add New Boss
+                        <i class="fas fa-plus"></i> Add Instance
                     </button>
                     
                     <button class="btn btn-danger btn-hidden" id="clearCompletionsBtn" title="Clear all completion marks" style="display: none;">
@@ -403,10 +409,10 @@
     <!-- Add Boss Modal -->
     <div id="addBossModal" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2>Add New Boss</h2>
-                <span class="close">&times;</span>
-            </div>
+                <div class="modal-header">
+                    <h2>Add Instance</h2>
+                    <span class="close">&times;</span>
+                </div>
             <form id="addBossForm">
                 <div class="form-group">
                     <label for="bossName">Boss Name *</label>
@@ -469,7 +475,17 @@
                 
                 <div class="form-group">
                     <label for="bossLocation">Location</label>
-                    <input type="text" id="bossLocation" placeholder="e.g., Mossy Forest, Ruined Path">
+                    <select id="bossLocation">
+                        <option value="">Select Location</option>
+                        <option value="Fields">Fields</option>
+                        <option value="Forbidden City">Forbidden City</option>
+                        <option value="Mossy Forest">Mossy Forest</option>
+                        <option value="Mountain Pass">Mountain Pass</option>
+                        <option value="New Eden">New Eden</option>
+                        <option value="Outer Temple">Outer Temple</option>
+                        <option value="Ruined Path">Ruined Path</option>
+                        <option value="Seaside Cliffs">Seaside Cliffs</option>
+                    </select>
                 </div>
                 
                 
@@ -478,9 +494,25 @@
                     <input type="url" id="bossRedditLink" placeholder="https://www.reddit.com/r/SwordAndSupperGame/...">
                 </div>
                 
+                <div class="form-group">
+                    <label>Special Instance Properties</label>
+                    <div class="mystery-icons">
+                        <label class="mystery-icon-checkbox">
+                            <input type="checkbox" id="hasRuinedPath">
+                            <img src="images/ruinedpath.png" alt="Ruined Path" class="mystery-icon">
+                            <span>Ruined Path</span>
+                        </label>
+                        <label class="mystery-icon-checkbox">
+                            <input type="checkbox" id="hasIncreased">
+                            <img src="images/increased.png" alt="Increased" class="mystery-icon">
+                            <span>Increased</span>
+                        </label>
+                    </div>
+                </div>
+                
                 <div class="form-actions">
                     <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Add Boss</button>
+                    <button type="submit" class="btn btn-primary">Add Instance</button>
                 </div>
             </form>
         </div>
