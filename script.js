@@ -259,11 +259,9 @@ class BossDatabase {
         // Get appropriate icon - only show boss icon for actual bosses
         let iconHtml = '';
         if (isBoss) {
-            iconHtml = '<img src="images/bossicon.png" alt="Boss" class="boss-icon">';
+            iconHtml = '<img src="images/bossicon.png" alt="Boss" class="boss-icon" style="width: 20px; height: 20px; display: inline-block;">';
         }
         
-        // Debug logging
-        console.log('Boss:', boss.name, 'instanceType:', boss.instanceType, 'type:', boss.type, 'isBoss:', isBoss, 'iconHtml:', iconHtml);
         
         // Difficulty display
         let difficultyDisplay = '';
