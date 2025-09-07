@@ -130,6 +130,22 @@ body {
     display: inline-block;
 }
 
+/* Start Mission Button */
+.start-mission-btn {
+    padding: 4px !important;
+    min-width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.start-mission-btn img {
+    width: 24px;
+    height: 24px;
+    margin: 0 !important;
+}
+
 /* Game Modal */
 #gameModal {
     display: none;

@@ -344,9 +344,8 @@ class BossDatabase {
                 </td>
                 <td>
                     <div class="table-actions">
-                        <button class="btn btn-small btn-success" onclick="bossDB.startMission('${boss.name}', '${boss.redditLink || '#'}')">
-                            <img src="images/startmission.png" alt="Start Mission" style="width: 16px; height: 16px; margin-right: 4px;">
-                            Start Mission
+                        <button class="btn btn-small btn-success start-mission-btn" onclick="bossDB.startMission('${boss.name}', '${boss.redditLink || '#'}')" title="Start Mission">
+                            <img src="images/startmission.png" alt="Start Mission">
                         </button>
                         ${boss.redditLink ? `<a href="${boss.redditLink}" target="_blank" class="btn btn-small btn-primary"><i class="fab fa-reddit"></i></a>` : ''}
                         <button class="btn btn-small btn-secondary" onclick="bossDB.editBoss(${boss.id})">
@@ -379,16 +378,111 @@ class BossDatabase {
     }
 
     openModal() {
+        // Always open the modal, but check auth status inside it
         document.getElementById('addBossModal').style.display = 'block';
         document.body.style.overflow = 'hidden';
+        
+        // Check GitHub auth status and update modal content accordingly
+        this.checkGitHubAuthInModal();
+    }
+
+    async checkGitHubAuthInModal() {
+        const modal = document.getElementById('addBossModal');
+        const form = document.getElementById('addBossForm');
+        const modalTitle = modal.querySelector('h2');
+        
+        try {
+            // Try to make a simple API call to check if user is authenticated
+            const response = await fetch('https://api.github.com/user', {
+                credentials: 'include'
+            });
+            
+            if (response.ok) {
+                // User is logged in, show the form normally
+                modalTitle.textContent = 'Add New Instance';
+                form.style.display = 'block';
+                // Hide any auth message if it exists
+                const authMessage = modal.querySelector('.auth-message');
+                if (authMessage) {
+                    authMessage.remove();
+                }
+            } else {
+                // User is not logged in, show auth message instead of form
+                this.showAuthMessageInModal();
+            }
+        } catch (error) {
+            // If we can't check (CORS issues), assume not logged in
+            this.showAuthMessageInModal();
+        }
+    }
+
+    showAuthMessageInModal() {
+        const modal = document.getElementById('addBossModal');
+        const form = document.getElementById('addBossForm');
+        const modalTitle = modal.querySelector('h2');
+        
+        // Update modal title
+        modalTitle.textContent = 'GitHub Authentication Required';
+        
+        // Hide the form
+        form.style.display = 'none';
+        
+        // Remove any existing auth message
+        const existingAuthMessage = modal.querySelector('.auth-message');
+        if (existingAuthMessage) {
+            existingAuthMessage.remove();
+        }
+        
+        // Create and show auth message
+        const authMessage = document.createElement('div');
+        authMessage.className = 'auth-message';
+        authMessage.innerHTML = `
+            <div style="text-align: center; padding: 2rem;">
+                <i class="fab fa-github" style="font-size: 3rem; color: #333; margin-bottom: 1rem;"></i>
+                <h3>Login Required</h3>
+                <p>To add instances to the community database, you need to be logged into GitHub.</p>
+                <button class="btn btn-primary" onclick="handleGitHubLogin()" style="margin: 1rem 0;">
+                    <i class="fab fa-github"></i> Login to GitHub
+                </button>
+                <p style="font-size: 0.9rem; color: #666; margin-top: 1rem;">
+                    After logging in, refresh this page and try again.
+                </p>
+            </div>
+        `;
+        
+        // Insert after the title, before the form
+        modalTitle.parentNode.insertBefore(authMessage, form);
     }
 
     closeModal() {
-        document.getElementById('addBossModal').style.display = 'none';
+        const modal = document.getElementById('addBossModal');
+        const form = document.getElementById('addBossForm');
+        const modalTitle = modal.querySelector('h2');
+        
+        // Hide modal
+        modal.style.display = 'none';
         document.body.style.overflow = 'auto';
-        document.getElementById('addBossForm').reset();
+        
+        // Reset form
+        form.reset();
+        form.style.display = 'block'; // Make sure form is visible for next time
         document.getElementById('hasRuinedPath').checked = false;
         document.getElementById('hasIncreased').checked = false;
+        
+        // Reset modal title
+        modalTitle.textContent = 'Add New Instance';
+        
+        // Remove any auth message
+        const authMessage = modal.querySelector('.auth-message');
+        if (authMessage) {
+            authMessage.remove();
+        }
+        
+        // Clear any messages
+        const messageContainer = document.getElementById('messageContainer');
+        if (messageContainer) {
+            messageContainer.innerHTML = '';
+        }
     }
 
     generateType(instanceType, difficulty) {
@@ -1024,19 +1118,42 @@ This instance was submitted through the website and should be added to the datab
         }
     }
 
-    checkGitHubStatus() {
-        // Since we can't reliably check GitHub login status from client-side,
-        // we'll show a generic status that encourages login
-        this.updateGitHubStatus(false);
+    async checkGitHubStatus() {
+        try {
+            // Try to make a simple API call to check if user is authenticated
+            const response = await fetch('https://api.github.com/user', {
+                credentials: 'include'
+            });
+            
+            if (response.ok) {
+                // User is logged in
+                const userData = await response.json();
+                this.updateGitHubStatus(true, userData.login);
+            } else {
+                // User is not logged in
+                this.updateGitHubStatus(false);
+            }
+        } catch (error) {
+            // If we can't check (CORS issues), assume not logged in
+            this.updateGitHubStatus(false);
+        }
     }
 
-    updateGitHubStatus(isLoggedIn) {
+    updateGitHubStatus(isLoggedIn, username = null) {
         const statusElement = document.getElementById('githubStatus');
         const statusText = document.getElementById('githubStatusText');
         
-        // Always show login option since we can't reliably check status
-        statusElement.classList.remove('logged-in');
-        statusText.textContent = 'Login to GitHub';
+        if (isLoggedIn && username) {
+            // User is logged in
+            statusElement.classList.add('logged-in');
+            statusText.textContent = `@${username}`;
+            statusElement.title = `Logged in as ${username}. Click to logout or change account.`;
+        } else {
+            // User is not logged in
+            statusElement.classList.remove('logged-in');
+            statusText.textContent = 'Login to GitHub';
+            statusElement.title = 'Click to login to GitHub and enable instance submission';
+        }
     }
 
     openGameModal(instanceName, gameUrl) {
@@ -1059,7 +1176,7 @@ This instance was submitted through the website and should be added to the datab
         // For now, we'll use the Reddit link as the game URL
         // In the future, this could be a direct game URL
         if (gameUrl && gameUrl !== '#') {
-            this.openGameModal(instanceName, gameUrl);
+            window.open(gameUrl, '_blank');
         } else {
             this.showMessage('No game link available for this instance.', 'warning');
         }
@@ -1186,19 +1303,25 @@ This instance was submitted through the website and should be added to the datab
     }
 }
 
-// Global function for GitHub login
+// Global function for GitHub login/logout
 function handleGitHubLogin() {
-    const message = `To contribute to the database, you'll need a GitHub account (it's free!).
-
-Click OK to:
-1. Go to GitHub.com
-2. Log in or create a free account
-3. Come back here to contribute
-
-GitHub is where developers share code and collaborate on projects.`;
+    const statusElement = document.getElementById('githubStatus');
     
-    if (confirm(message)) {
+    if (statusElement.classList.contains('logged-in')) {
+        // User is logged in, offer logout
+        if (confirm('Would you like to logout from GitHub?')) {
+            // Open GitHub logout in a new tab
+            window.open('https://github.com/logout', '_blank');
+            setTimeout(() => {
+                alert('After logging out, refresh this page to update your status.');
+            }, 1000);
+        }
+    } else {
+        // User is not logged in, open login
         window.open('https://github.com/login', '_blank');
+        setTimeout(() => {
+            alert('After logging into GitHub, refresh this page to enable instance submission.');
+        }, 1000);
     }
 }
 
