@@ -6,6 +6,10 @@ class BossDatabase {
         this.sortOrder = 'asc';
         this.currentSort = 'level';
         this.completedBosses = new Set();
+        this.abilities = [];
+        this.items = [];
+        this.filteredItems = [];
+        this.levelGoldCosts = [];
         this.init();
     }
 
@@ -18,6 +22,7 @@ class BossDatabase {
         this.initializeAbilities();
         this.initializeItems();
         this.loadItemsFromLocalStorage();
+        this.loadLevelGoldFromLocalStorage();
     }
 
     async loadData() {
@@ -85,6 +90,11 @@ class BossDatabase {
         document.querySelectorAll('.category-btn').forEach(btn => {
             btn.addEventListener('click', (e) => this.filterAbilities(e.target.dataset.category));
         });
+
+        // Level/Gold functionality
+        document.getElementById('addLevelGoldBtn').addEventListener('click', () => this.openLevelGoldModal());
+        document.getElementById('addLevelGoldForm').addEventListener('submit', (e) => this.handleAddLevelGold(e));
+        document.getElementById('cancelLevelGoldBtn').addEventListener('click', () => this.closeLevelGoldModal());
 
         // Modal close functionality
         document.querySelectorAll('.close').forEach(closeBtn => {
@@ -230,15 +240,43 @@ class BossDatabase {
     }
 
     createBossRow(boss) {
-        const difficultyStars = '⭐'.repeat(boss.difficulty);
-        const typeClass = boss.type === 'boss-rush' ? 'boss-rush' : '';
-        const typeLabel = boss.type === 'boss-rush' ? 'Boss Rush' : 'Regular Boss';
         const isCompleted = this.completedBosses.has(boss.id);
-        const completedClass = isCompleted ? 'completed' : '';
-        const nameClass = isCompleted ? 'boss-name completed' : 'boss-name';
+        const isBossRush = boss.difficulty === 'boss-rush';
+        const isBoss = boss.instanceType === 'boss';
+        
+        // Get appropriate icon
+        let iconHtml = '';
+        if (isBoss) {
+            iconHtml = '<img src="images/bossicon.png" alt="Boss" class="boss-icon">';
+        } else {
+            iconHtml = '<img src="images/itemicon.png" alt="Instance" class="instance-icon">';
+        }
+        
+        // Add level range icon if applicable
+        if (boss.level === '41-60') {
+            iconHtml += '<img src="images/4160.png" alt="Level 41-60" class="level-icon">';
+        }
+        
+        // Difficulty display
+        let difficultyDisplay = '';
+        if (isBossRush) {
+            difficultyDisplay = '🏃 Boss Rush';
+        } else {
+            difficultyDisplay = '⭐'.repeat(boss.difficulty);
+        }
+        
+        // User attribution
+        let submittedByHtml = '';
+        if (boss.submittedBy) {
+            submittedByHtml = `
+                <div class="submitted-by">
+                    Added by <a href="https://www.reddit.com/user/${boss.submittedBy}" target="_blank">/u/${boss.submittedBy}</a>
+                </div>
+            `;
+        }
         
         return `
-            <tr class="${completedClass}">
+            <tr class="${isCompleted ? 'completed' : ''}">
                 <td>
                     <label class="completion-checkbox">
                         <input type="checkbox" ${isCompleted ? 'checked' : ''} 
@@ -249,16 +287,19 @@ class BossDatabase {
                     </label>
                 </td>
                 <td>
-                    <div class="${nameClass}">${this.escapeHtml(boss.name)}</div>
+                    <div class="${isCompleted ? 'boss-name completed' : 'boss-name'}">
+                        ${iconHtml}${this.escapeHtml(boss.name)}
+                        ${submittedByHtml}
+                    </div>
                 </td>
                 <td>
                     <span class="boss-level">Level ${boss.level}</span>
                 </td>
                 <td>
-                    <div class="boss-difficulty">${difficultyStars}</div>
+                    <div class="boss-difficulty">${difficultyDisplay}</div>
                 </td>
                 <td>
-                    <span class="boss-type ${typeClass}">${typeLabel}</span>
+                    <span class="boss-type">${boss.type}</span>
                 </td>
                 <td>
                     <div class="boss-location">${boss.location ? this.escapeHtml(boss.location) : '-'}</div>
@@ -314,15 +355,17 @@ class BossDatabase {
             id: Date.now(), // Simple ID generation
             name: document.getElementById('bossName').value,
             level: document.getElementById('bossLevel').value,
-            difficulty: parseInt(document.getElementById('bossDifficulty').value),
+            difficulty: document.getElementById('bossDifficulty').value,
+            instanceType: document.getElementById('bossInstanceType').value,
             type: document.getElementById('bossType').value,
             location: document.getElementById('bossLocation').value,
             redditLink: document.getElementById('bossRedditLink').value,
+            submittedBy: document.getElementById('bossSubmittedBy').value,
             dateAdded: new Date().toISOString().split('T')[0]
         };
 
         // Validate required fields
-        if (!newBoss.name || !newBoss.level || !newBoss.difficulty || !newBoss.type) {
+        if (!newBoss.name || !newBoss.level || !newBoss.difficulty || !newBoss.instanceType || !newBoss.type) {
             this.showMessage('Please fill in all required fields.', 'error');
             return;
         }
@@ -744,6 +787,94 @@ This item was submitted through the website and should be added to the database.
             }
         } catch (error) {
             console.error('Error loading items from localStorage:', error);
+        }
+    }
+
+    // Level/Gold functionality
+    openLevelGoldModal() {
+        document.getElementById('addLevelGoldModal').style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    }
+
+    closeLevelGoldModal() {
+        document.getElementById('addLevelGoldModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+        document.getElementById('addLevelGoldForm').reset();
+    }
+
+    handleAddLevelGold(e) {
+        e.preventDefault();
+        
+        const newLevelGold = {
+            id: Date.now(),
+            level: parseInt(document.getElementById('levelGoldLevel').value),
+            cost: parseInt(document.getElementById('levelGoldCost').value),
+            submittedBy: document.getElementById('levelGoldSubmittedBy').value,
+            dateAdded: new Date().toISOString().split('T')[0]
+        };
+
+        // Validate required fields
+        if (!newLevelGold.level || !newLevelGold.cost) {
+            this.showMessage('Please fill in all required fields.', 'error');
+            return;
+        }
+
+        this.levelGoldCosts.push(newLevelGold);
+        this.renderLevelGoldCosts();
+        this.closeLevelGoldModal();
+        
+        this.showMessage('Level/Gold cost added successfully!', 'success');
+        
+        // Save to localStorage
+        this.saveLevelGoldToLocalStorage();
+    }
+
+    renderLevelGoldCosts() {
+        const container = document.getElementById('levelGoldList');
+        if (this.levelGoldCosts.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-coins"></i>
+                    <h3>No level/gold costs yet</h3>
+                    <p>Add some level/gold costs to get started!</p>
+                </div>
+            `;
+            return;
+        }
+
+        // Sort by level
+        const sortedCosts = [...this.levelGoldCosts].sort((a, b) => a.level - b.level);
+
+        container.innerHTML = sortedCosts.map(cost => `
+            <div class="level-gold-card">
+                <div class="level-gold-level">Level ${cost.level}</div>
+                <div class="level-gold-cost">${cost.cost} Gold</div>
+                ${cost.submittedBy ? `
+                    <div class="level-gold-submitted">
+                        Added by <a href="https://www.reddit.com/user/${cost.submittedBy}" target="_blank">/u/${cost.submittedBy}</a>
+                    </div>
+                ` : ''}
+            </div>
+        `).join('');
+    }
+
+    saveLevelGoldToLocalStorage() {
+        try {
+            localStorage.setItem('swordAndSupperLevelGold', JSON.stringify(this.levelGoldCosts));
+        } catch (error) {
+            console.error('Error saving level/gold to localStorage:', error);
+        }
+    }
+
+    loadLevelGoldFromLocalStorage() {
+        try {
+            const savedLevelGold = localStorage.getItem('swordAndSupperLevelGold');
+            if (savedLevelGold) {
+                this.levelGoldCosts = JSON.parse(savedLevelGold);
+                this.renderLevelGoldCosts();
+            }
+        } catch (error) {
+            console.error('Error loading level/gold from localStorage:', error);
         }
     }
 }

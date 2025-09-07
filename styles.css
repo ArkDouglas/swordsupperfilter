@@ -1050,6 +1050,97 @@ input:checked + .slider:before {
     border-color: #667eea;
 }
 
+/* Level/Gold Section */
+.level-gold-section {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.level-gold-section h3 {
+    color: #333;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+}
+
+.level-gold-controls {
+    margin-bottom: 1.5rem;
+}
+
+.level-gold-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.level-gold-card {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+    border-left: 4px solid #ffc107;
+}
+
+.level-gold-level {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.level-gold-cost {
+    font-size: 1.2rem;
+    color: #ffc107;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.level-gold-submitted {
+    font-size: 0.8rem;
+    color: #666;
+    font-style: italic;
+}
+
+/* Instance Type Icons */
+.instance-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 0.5rem;
+    vertical-align: middle;
+}
+
+.boss-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 0.5rem;
+    vertical-align: middle;
+}
+
+.level-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 0.5rem;
+    vertical-align: middle;
+}
+
+/* User Attribution */
+.submitted-by {
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 0.25rem;
+}
+
+.submitted-by a {
+    color: #667eea;
+    text-decoration: none;
+}
+
+.submitted-by a:hover {
+    text-decoration: underline;
+}
+
 /* FAQ Section */
 .faq-full-link {
     margin-top: 1rem;

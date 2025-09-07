@@ -158,6 +158,21 @@
                 </div>
             </section>
             </div>
+            
+            <!-- Level/Gold Ratio Section -->
+            <section class="level-gold-section">
+                <h3><i class="fas fa-coins"></i> Level/Gold Upgrade Costs</h3>
+                <div class="level-gold-container">
+                    <div class="level-gold-controls">
+                        <button class="btn btn-primary" id="addLevelGoldBtn">
+                            <i class="fas fa-plus"></i> Add Level/Gold Cost
+                        </button>
+                    </div>
+                    <div id="levelGoldList" class="level-gold-grid">
+                        <!-- Level/Gold entries will be dynamically inserted here -->
+                    </div>
+                </div>
+            </section>
 
             <!-- Abilities Tab Content -->
             <div id="abilities-tab" class="tab-content">
@@ -385,7 +400,23 @@
                         <option value="3">⭐ ⭐ ⭐ Moderate</option>
                         <option value="4">⭐ ⭐ ⭐ ⭐ Hard</option>
                         <option value="5">⭐ ⭐ ⭐ ⭐ ⭐ Extreme</option>
+                        <option value="boss-rush">🏃 Boss Rush</option>
                     </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="bossInstanceType">Instance Type *</label>
+                    <select id="bossInstanceType" required>
+                        <option value="">Select Type</option>
+                        <option value="boss">Boss</option>
+                        <option value="normal">Normal Instance</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="bossSubmittedBy">Submitted By (Reddit Username)</label>
+                    <input type="text" id="bossSubmittedBy" placeholder="e.g., slayer2343">
+                    <small>Your Reddit username for attribution</small>
                 </div>
                 
                 <div class="form-group">
@@ -550,6 +581,38 @@
             </div>
         </div>
     </footer>
+
+    <!-- Add Level/Gold Modal -->
+    <div id="addLevelGoldModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Level/Gold Cost</h2>
+                <span class="close">&times;</span>
+            </div>
+            <form id="addLevelGoldForm">
+                <div class="form-group">
+                    <label for="levelGoldLevel">Level *</label>
+                    <input type="number" id="levelGoldLevel" required placeholder="e.g., 22" min="1">
+                </div>
+                
+                <div class="form-group">
+                    <label for="levelGoldCost">Gold Cost *</label>
+                    <input type="number" id="levelGoldCost" required placeholder="e.g., 750" min="0">
+                </div>
+                
+                <div class="form-group">
+                    <label for="levelGoldSubmittedBy">Submitted By (Reddit Username)</label>
+                    <input type="text" id="levelGoldSubmittedBy" placeholder="e.g., slayer2343">
+                    <small>Your Reddit username for attribution</small>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelLevelGoldBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Cost</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>
