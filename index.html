@@ -10,15 +10,37 @@
 <body>
     <header class="header">
         <div class="container">
-            <h1><i class="fas fa-dragon"></i> Sword and Supper - Boss Database</h1>
-            <p>A comprehensive collection of boss instances sorted by difficulty level</p>
+            <h1><i class="fas fa-dragon"></i> Sword and Supper - Game Database</h1>
+            <p>A comprehensive fan-made database for Sword and Supper</p>
         </div>
     </header>
 
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+        <div class="container">
+            <div class="tab-buttons">
+                <button class="tab-btn active" data-tab="bosses">
+                    <i class="fas fa-skull"></i> Bosses
+                </button>
+                <button class="tab-btn" data-tab="abilities">
+                    <i class="fas fa-magic"></i> Abilities
+                </button>
+                <button class="tab-btn" data-tab="items">
+                    <i class="fas fa-gem"></i> Items
+                </button>
+                <button class="tab-btn" data-tab="faq">
+                    <i class="fas fa-question-circle"></i> FAQ
+                </button>
+            </div>
+        </div>
+    </nav>
+
     <main class="main">
         <div class="container">
-            <!-- Controls Section -->
-            <section class="controls">
+            <!-- Bosses Tab Content -->
+            <div id="bosses-tab" class="tab-content active">
+                <!-- Controls Section -->
+                <section class="controls">
                 <div class="search-filter">
                     <div class="search-box">
                         <i class="fas fa-search"></i>
@@ -128,6 +150,156 @@
                     </table>
                 </div>
             </section>
+            </div>
+
+            <!-- Abilities Tab Content -->
+            <div id="abilities-tab" class="tab-content">
+                <section class="section-header">
+                    <h2><i class="fas fa-magic"></i> Abilities Database</h2>
+                    <p>Comprehensive list of all abilities in Sword and Supper</p>
+                </section>
+                
+                <div class="abilities-container">
+                    <div class="ability-categories">
+                        <button class="category-btn active" data-category="all">All Abilities</button>
+                        <button class="category-btn" data-category="temple">Temple Abilities</button>
+                        <button class="category-btn" data-category="equipment">Equipment Abilities</button>
+                    </div>
+                    
+                    <div id="abilitiesList" class="abilities-grid">
+                        <!-- Abilities will be dynamically inserted here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Items Tab Content -->
+            <div id="items-tab" class="tab-content">
+                <section class="section-header">
+                    <h2><i class="fas fa-gem"></i> Items Database</h2>
+                    <p>Equipment, consumables, and other items in Sword and Supper</p>
+                </section>
+                
+                <div class="items-controls">
+                    <button class="btn btn-primary" id="addItemBtn">
+                        <i class="fas fa-plus"></i> Add New Item
+                    </button>
+                    
+                    <div class="item-filters">
+                        <select id="itemTypeFilter">
+                            <option value="">All Types</option>
+                            <option value="weapon">Weapon</option>
+                            <option value="armor">Armor</option>
+                            <option value="accessory">Accessory</option>
+                            <option value="consumable">Consumable</option>
+                            <option value="map">Map</option>
+                            <option value="beta">Beta Equipment</option>
+                        </select>
+                        
+                        <input type="text" id="itemSearchInput" placeholder="Search items...">
+                    </div>
+                </div>
+                
+                <div id="itemsList" class="items-grid">
+                    <!-- Items will be dynamically inserted here -->
+                </div>
+            </div>
+
+            <!-- FAQ Tab Content -->
+            <div id="faq-tab" class="tab-content">
+                <section class="section-header">
+                    <h2><i class="fas fa-question-circle"></i> Frequently Asked Questions</h2>
+                    <p>Common questions and answers about Sword and Supper</p>
+                </section>
+                
+                <div class="faq-container">
+                    <div class="faq-item">
+                        <h3>Where are the old posts?</h3>
+                        <p>As mentioned in the Welcome Post, during the Closed Beta it's sometimes necessary for us to remove or reset content. In some cases, old data is not longer compatible with these new systems, and we have to remove it to keep the game working smoothly. We know no-one likes resets, so we avoid it wherever possible. We really appreciate your patience while we make these changes!</p>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <h3>My hearts didn't refresh! What can I do?</h3>
+                        <p>Try fully refreshing the page and reloading the app - there is an intermittent issue where your hearts have successfully recharged, but the display in-game doesn't update. A refresh should fix it.</p>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <h3>What do the stats mean?</h3>
+                        <ul>
+                            <li><strong>ATK:</strong> Raw attack power</li>
+                            <li><strong>DEF:</strong> Defense. Reduces incoming damage</li>
+                            <li><strong>SPD:</strong> Speed. Faster characters go first and can attack more than once before slower characters are ready</li>
+                            <li><strong>DGE:</strong> Dodge chance. Dodge an incoming attack for 0 damage.</li>
+                            <li><strong>CRT:</strong> Crit chance. Critical attacks do 2x damage.</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <h3>How do I level up?</h3>
+                        <p>Use the Stats button (bottom left) to access the stat menu. The gold you earn in missions can be spent on upgrading your stats and boosting your level.</p>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <h3>Why can I only level up HP, ATK and DEF?</h3>
+                        <p>The gold-based level-up system is designed to support upgrades to the core HP, ATK and DEF. Now that we've added more equipment with boosts for the secondary stats (like Speed and Crit), we've removed the ability to upgrade these directly.</p>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <h3>How do I get equipment?</h3>
+                        <p>Beat missions to collect the treasure at the end - some missions reward with equipment as well as gold. Bosses also drop equipment loot. Check out the 'Equip' button (the little bag) to view your inventory and equip your character.</p>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <h3>What's the deal with equipment marked as 'Beta'</h3>
+                        <p>During the early stages of the Beta, players were still receiving test equipment that isn't intended for inclusion in the full game. That equipment has now been retired and can no longer be obtained. If you already own some of this OG equipment, you can upgrade it to a new item and continue to use it.</p>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <h3>What do the abilities do?</h3>
+                        <p>Abilities you gain from Temples are temporary and apply only to that Mission. Abilities granted by Equipment are active whenever that item is equipped.</p>
+                        <ul>
+                            <li><strong>Add Rage On Heal:</strong> Add rage whenever you heal.</li>
+                            <li><strong>Boost Attack On High HP:</strong> Boosts attack when HP is 100%.</li>
+                            <li><strong>Critical Recovery:</strong> Heal for 3% of Max HP whenever you land a critical hit.</li>
+                            <li><strong>Dodge if Low:</strong> Increases dodge chance by 20% when HP is below 30%.</li>
+                            <li><strong>Heal on Bolt:</strong> Heal a small amount whenever a lightning bolt fires.</li>
+                            <li><strong>Lightning Bolt:</strong> Zap your target with a lightning bolt at the start of your turn.</li>
+                            <li><strong>Lightning On Attack:</strong> When you attack, zap your target with a lightning bolt.</li>
+                            <li><strong>Lightning On Crit:</strong> When you make a critical attack, zap your target with a lightning bolt.</li>
+                            <li><strong>Magic Knife:</strong> Throw a magic knife at the start of your turn.</li>
+                            <li><strong>Magic Knife on Crit:</strong> Throw a magic knife whenever you make a critical attack.</li>
+                            <li><strong>Magic Knife On Rage:</strong> On Rage activation, throw a magic knife.</li>
+                            <li><strong>Second Wind:</strong> Heal for 10% of Max HP at the start of each of your next 3 turns the first time you dip below 30% HP.</li>
+                            <li><strong>Strike Twice Every Other:</strong> Every other turn, attack twice with your main weapon.</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <h3>What's the yellow bar under my character?</h3>
+                        <p>Fighting is a hungry business! Every time you attack, your hunger meter will fill. When it's full, you'll unleash an extra-ferocious rage attack, and the bar will reset.</p>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <h3>How can I create a Mission?</h3>
+                        <p>When you beat a Mission, you'll often receive a 'Map' item as part of the Mission reward. Open the Maps tab in your inventory and select a Map to use it.</p>
+                        <p>Mission creators receive a bonus for playing their own mission - choose between extra gold, or stronger attack power. Mission creators also have the option to customize missions they create: play your own mission to add an enemy taunt that all other players will see.</p>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <h3>How do I leave feedback?</h3>
+                        <p>Head over to the main discussion thread and add a comment.</p>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <h3>Why was I invited?</h3>
+                        <p>Reddit sent out invites to the closed beta to active members of related gaming subreddits. Thanks for coming to check the game out!</p>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <h3>Why is the subreddit called CabbageIdle?</h3>
+                        <p>CabbageIdle was the internal codename for the game before it became Sword & Supper.</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -201,10 +373,99 @@
         </div>
     </div>
 
+    <!-- Add Item Modal -->
+    <div id="addItemModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Item</h2>
+                <span class="close">&times;</span>
+            </div>
+            <form id="addItemForm">
+                <div class="form-group">
+                    <label for="itemName">Item Name *</label>
+                    <input type="text" id="itemName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="itemType">Item Type *</label>
+                    <select id="itemType" required>
+                        <option value="">Select Item Type</option>
+                        <option value="weapon">Weapon</option>
+                        <option value="armor">Armor</option>
+                        <option value="accessory">Accessory</option>
+                        <option value="consumable">Consumable</option>
+                        <option value="map">Map</option>
+                        <option value="beta">Beta Equipment</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="itemRarity">Rarity</label>
+                    <select id="itemRarity">
+                        <option value="">Select Rarity</option>
+                        <option value="common">Common</option>
+                        <option value="uncommon">Uncommon</option>
+                        <option value="rare">Rare</option>
+                        <option value="epic">Epic</option>
+                        <option value="legendary">Legendary</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="itemDescription">Description *</label>
+                    <textarea id="itemDescription" required placeholder="Describe the item's effects, stats, or special properties..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="itemImage">Item Image</label>
+                    <input type="file" id="itemImage" accept="image/*">
+                    <small>Upload an image of the item (optional)</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="itemStats">Stats/Effects</label>
+                    <textarea id="itemStats" placeholder="e.g., +10 ATK, +5 DEF, Lightning On Attack ability..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="itemSource">How to Obtain</label>
+                    <input type="text" id="itemSource" placeholder="e.g., Boss drop, Mission reward, Shop...">
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelItemBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Item</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2024 Sword and Supper Boss Database. Contribute your discoveries!</p>
-            <p>Built with ❤️ for the Sword and Supper community</p>
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Sword and Supper Database</h4>
+                    <p>A comprehensive fan-made database for the Sword and Supper game</p>
+                    <p class="disclaimer">⚠️ This is an unofficial, fan-made database. Not affiliated with the official game.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Official Links</h4>
+                    <a href="https://www.reddit.com/r/SwordAndSupperGame" target="_blank" class="footer-link">
+                        <i class="fab fa-reddit"></i> Official Subreddit
+                    </a>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Contribute</h4>
+                    <p>Help build the database by adding bosses, items, and abilities!</p>
+                    <p>Built with ❤️ for the Sword and Supper community</p>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 Sword and Supper Database. All game content belongs to the original developers.</p>
+            </div>
         </div>
     </footer>
 

@@ -15,6 +15,9 @@ class BossDatabase {
         this.setupEventListeners();
         this.renderBosses();
         this.updateStats();
+        this.initializeAbilities();
+        this.initializeItems();
+        this.loadItemsFromLocalStorage();
     }
 
     async loadData() {
@@ -60,12 +63,44 @@ class BossDatabase {
         // Clear completions functionality
         document.getElementById('clearCompletionsBtn').addEventListener('click', () => this.clearAllCompletions());
 
+        // Tab navigation
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => this.switchTab(e.target.dataset.tab));
+        });
+
+        // Add item functionality
+        document.getElementById('addItemBtn').addEventListener('click', () => this.openItemModal());
+        document.getElementById('addItemForm').addEventListener('submit', (e) => this.handleAddItem(e));
+        document.getElementById('cancelItemBtn').addEventListener('click', () => this.closeItemModal());
+
+        // Item filters
+        document.getElementById('itemTypeFilter').addEventListener('change', () => this.filterItems());
+        document.getElementById('itemSearchInput').addEventListener('input', (e) => this.searchItems(e.target.value));
+
+        // Ability categories
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => this.filterAbilities(e.target.dataset.category));
+        });
+
         // Modal close functionality
-        document.querySelector('.close').addEventListener('click', () => this.closeModal());
+        document.querySelectorAll('.close').forEach(closeBtn => {
+            closeBtn.addEventListener('click', (e) => {
+                const modal = e.target.closest('.modal');
+                if (modal.id === 'addBossModal') {
+                    this.closeModal();
+                } else if (modal.id === 'addItemModal') {
+                    this.closeItemModal();
+                }
+            });
+        });
+
         window.addEventListener('click', (e) => {
-            const modal = document.getElementById('addBossModal');
-            if (e.target === modal) {
-                this.closeModal();
+            if (e.target.classList.contains('modal')) {
+                if (e.target.id === 'addBossModal') {
+                    this.closeModal();
+                } else if (e.target.id === 'addItemModal') {
+                    this.closeItemModal();
+                }
             }
         });
     }
@@ -431,6 +466,192 @@ class BossDatabase {
             remaining: total - completed,
             percentage
         };
+    }
+
+    // Tab Navigation
+    switchTab(tabName) {
+        // Update tab buttons
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+
+        // Update tab content
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
+        });
+        document.getElementById(`${tabName}-tab`).classList.add('active');
+    }
+
+    // Abilities Section
+    initializeAbilities() {
+        this.abilities = [
+            { name: "Add Rage On Heal", description: "Add rage whenever you heal.", category: "equipment" },
+            { name: "Boost Attack On High HP", description: "Boosts attack when HP is 100%.", category: "equipment" },
+            { name: "Critical Recovery", description: "Heal for 3% of Max HP whenever you land a critical hit.", category: "equipment" },
+            { name: "Dodge if Low", description: "Increases dodge chance by 20% when HP is below 30%.", category: "equipment" },
+            { name: "Heal on Bolt", description: "Heal a small amount whenever a lightning bolt fires.", category: "equipment" },
+            { name: "Lightning Bolt", description: "Zap your target with a lightning bolt at the start of your turn.", category: "temple" },
+            { name: "Lightning On Attack", description: "When you attack, zap your target with a lightning bolt.", category: "equipment" },
+            { name: "Lightning On Crit", description: "When you make a critical attack, zap your target with a lightning bolt.", category: "equipment" },
+            { name: "Magic Knife", description: "Throw a magic knife at the start of your turn.", category: "temple" },
+            { name: "Magic Knife on Crit", description: "Throw a magic knife whenever you make a critical attack.", category: "equipment" },
+            { name: "Magic Knife On Rage", description: "On Rage activation, throw a magic knife.", category: "equipment" },
+            { name: "Second Wind", description: "Heal for 10% of Max HP at the start of each of your next 3 turns the first time you dip below 30% HP.", category: "equipment" },
+            { name: "Strike Twice Every Other", description: "Every other turn, attack twice with your main weapon.", category: "equipment" }
+        ];
+        this.filteredAbilities = [...this.abilities];
+        this.renderAbilities();
+    }
+
+    renderAbilities() {
+        const container = document.getElementById('abilitiesList');
+        container.innerHTML = this.filteredAbilities.map(ability => `
+            <div class="ability-card ${ability.category}">
+                <div class="ability-name">${ability.name}</div>
+                <div class="ability-description">${ability.description}</div>
+            </div>
+        `).join('');
+    }
+
+    filterAbilities(category) {
+        // Update category buttons
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelector(`[data-category="${category}"]`).classList.add('active');
+
+        // Filter abilities
+        if (category === 'all') {
+            this.filteredAbilities = [...this.abilities];
+        } else {
+            this.filteredAbilities = this.abilities.filter(ability => ability.category === category);
+        }
+        this.renderAbilities();
+    }
+
+    // Items Section
+    initializeItems() {
+        this.items = [];
+        this.filteredItems = [];
+        this.renderItems();
+    }
+
+    renderItems() {
+        const container = document.getElementById('itemsList');
+        if (this.filteredItems.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-gem"></i>
+                    <h3>No items found</h3>
+                    <p>Add some items to get started!</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = this.filteredItems.map(item => `
+            <div class="item-card ${item.type}">
+                <div class="item-header">
+                    <div>
+                        <h3 class="item-name">${this.escapeHtml(item.name)}</h3>
+                        ${item.rarity ? `<div class="item-rarity ${item.rarity}">${item.rarity.charAt(0).toUpperCase() + item.rarity.slice(1)}</div>` : ''}
+                    </div>
+                    <span class="item-type">${item.type}</span>
+                </div>
+                
+                ${item.image ? `<img src="${item.image}" alt="${item.name}" class="item-image">` : ''}
+                
+                <div class="item-description">${this.escapeHtml(item.description)}</div>
+                
+                ${item.stats ? `<div class="item-stats">${this.escapeHtml(item.stats)}</div>` : ''}
+                
+                ${item.source ? `<div class="item-source">Source: ${this.escapeHtml(item.source)}</div>` : ''}
+            </div>
+        `).join('');
+    }
+
+    filterItems() {
+        const typeFilter = document.getElementById('itemTypeFilter').value;
+        const searchTerm = document.getElementById('itemSearchInput').value.toLowerCase();
+
+        this.filteredItems = this.items.filter(item => {
+            const typeMatch = !typeFilter || item.type === typeFilter;
+            const searchMatch = !searchTerm || 
+                item.name.toLowerCase().includes(searchTerm) ||
+                item.description.toLowerCase().includes(searchTerm);
+            
+            return typeMatch && searchMatch;
+        });
+        this.renderItems();
+    }
+
+    searchItems(query) {
+        this.filterItems();
+    }
+
+    openItemModal() {
+        document.getElementById('addItemModal').style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    }
+
+    closeItemModal() {
+        document.getElementById('addItemModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+        document.getElementById('addItemForm').reset();
+    }
+
+    handleAddItem(e) {
+        e.preventDefault();
+        
+        const newItem = {
+            id: Date.now(),
+            name: document.getElementById('itemName').value,
+            type: document.getElementById('itemType').value,
+            rarity: document.getElementById('itemRarity').value,
+            description: document.getElementById('itemDescription').value,
+            stats: document.getElementById('itemStats').value,
+            source: document.getElementById('itemSource').value,
+            image: null, // Will be handled separately for file uploads
+            dateAdded: new Date().toISOString().split('T')[0]
+        };
+
+        // Validate required fields
+        if (!newItem.name || !newItem.type || !newItem.description) {
+            this.showMessage('Please fill in all required fields.', 'error');
+            return;
+        }
+
+        this.items.push(newItem);
+        this.filteredItems = [...this.items];
+        this.renderItems();
+        this.closeItemModal();
+        
+        this.showMessage('Item added successfully!', 'success');
+        
+        // Save to localStorage
+        this.saveItemsToLocalStorage();
+    }
+
+    saveItemsToLocalStorage() {
+        try {
+            localStorage.setItem('swordAndSupperItems', JSON.stringify(this.items));
+        } catch (error) {
+            console.error('Error saving items to localStorage:', error);
+        }
+    }
+
+    loadItemsFromLocalStorage() {
+        try {
+            const saved = localStorage.getItem('swordAndSupperItems');
+            if (saved) {
+                this.items = JSON.parse(saved);
+                this.filteredItems = [...this.items];
+                this.renderItems();
+            }
+        } catch (error) {
+            console.error('Error loading items from localStorage:', error);
+        }
     }
 }
 
