@@ -159,66 +159,70 @@ class BossDatabase {
     }
 
     renderBosses() {
-        const container = document.getElementById('bossContainer');
+        const container = document.getElementById('bossTableBody');
         
         if (this.filteredBosses.length === 0) {
             container.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-search"></i>
-                    <h3>No bosses found</h3>
-                    <p>Try adjusting your search or filter criteria</p>
-                </div>
+                <tr>
+                    <td colspan="7" class="empty-state">
+                        <i class="fas fa-search"></i>
+                        <h3>No bosses found</h3>
+                        <p>Try adjusting your search or filter criteria</p>
+                    </td>
+                </tr>
             `;
             return;
         }
 
-        container.innerHTML = this.filteredBosses.map(boss => this.createBossCard(boss)).join('');
+        container.innerHTML = this.filteredBosses.map(boss => this.createBossRow(boss)).join('');
     }
 
-    createBossCard(boss) {
+    createBossRow(boss) {
         const difficultyStars = '⭐'.repeat(boss.difficulty);
         const typeClass = boss.type === 'boss-rush' ? 'boss-rush' : '';
         const typeLabel = boss.type === 'boss-rush' ? 'Boss Rush' : 'Regular Boss';
         const isCompleted = this.completedBosses.has(boss.id);
         const completedClass = isCompleted ? 'completed' : '';
+        const nameClass = isCompleted ? 'boss-name completed' : 'boss-name';
         
         return `
-            <div class="boss-card ${typeClass} ${completedClass}">
-                <div class="boss-header">
-                    <div>
-                        <div class="boss-title-row">
-                            <h3 class="boss-name">${this.escapeHtml(boss.name)}</h3>
-                            <label class="completion-checkbox">
-                                <input type="checkbox" ${isCompleted ? 'checked' : ''} 
-                                       onchange="bossDB.toggleCompletion(${boss.id})">
-                                <span class="checkmark">
-                                    <i class="fas fa-check"></i>
-                                </span>
-                            </label>
-                        </div>
-                        <div class="boss-difficulty">${difficultyStars}</div>
+            <tr class="${completedClass}">
+                <td>
+                    <label class="completion-checkbox">
+                        <input type="checkbox" ${isCompleted ? 'checked' : ''} 
+                               onchange="bossDB.toggleCompletion(${boss.id})">
+                        <span class="checkmark">
+                            <i class="fas fa-check"></i>
+                        </span>
+                    </label>
+                </td>
+                <td>
+                    <div class="${nameClass}">${this.escapeHtml(boss.name)}</div>
+                </td>
+                <td>
+                    <span class="boss-level">Level ${boss.level}</span>
+                </td>
+                <td>
+                    <div class="boss-difficulty">${difficultyStars}</div>
+                </td>
+                <td>
+                    <span class="boss-type ${typeClass}">${typeLabel}</span>
+                </td>
+                <td>
+                    <div class="boss-location">${boss.location ? this.escapeHtml(boss.location) : '-'}</div>
+                </td>
+                <td>
+                    <div class="table-actions">
+                        ${boss.redditLink ? `<a href="${boss.redditLink}" target="_blank" class="btn btn-small btn-primary"><i class="fab fa-reddit"></i></a>` : ''}
+                        <button class="btn btn-small btn-secondary" onclick="bossDB.editBoss(${boss.id})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-small btn-secondary" onclick="bossDB.deleteBoss(${boss.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
                     </div>
-                    <div>
-                        <span class="boss-level">Level ${boss.level}</span>
-                        <span class="boss-type">${typeLabel}</span>
-                    </div>
-                </div>
-                
-                <div class="boss-details">
-                    ${boss.location ? `<div class="boss-location"><i class="fas fa-map-marker-alt"></i> ${this.escapeHtml(boss.location)}</div>` : ''}
-                    ${boss.description ? `<div class="boss-description">${this.escapeHtml(boss.description)}</div>` : ''}
-                </div>
-                
-                <div class="boss-actions">
-                    ${boss.redditLink ? `<a href="${boss.redditLink}" target="_blank" class="btn btn-small btn-primary"><i class="fab fa-reddit"></i> Reddit</a>` : ''}
-                    <button class="btn btn-small btn-secondary" onclick="bossDB.editBoss(${boss.id})">
-                        <i class="fas fa-edit"></i> Edit
-                    </button>
-                    <button class="btn btn-small btn-secondary" onclick="bossDB.deleteBoss(${boss.id})">
-                        <i class="fas fa-trash"></i> Delete
-                    </button>
-                </div>
-            </div>
+                </td>
+            </tr>
         `;
     }
 
@@ -264,7 +268,6 @@ class BossDatabase {
             difficulty: parseInt(document.getElementById('bossDifficulty').value),
             type: document.getElementById('bossType').value,
             location: document.getElementById('bossLocation').value,
-            description: document.getElementById('bossDescription').value,
             redditLink: document.getElementById('bossRedditLink').value,
             dateAdded: new Date().toISOString().split('T')[0]
         };
@@ -297,7 +300,6 @@ class BossDatabase {
         document.getElementById('bossDifficulty').value = boss.difficulty;
         document.getElementById('bossType').value = boss.type;
         document.getElementById('bossLocation').value = boss.location || '';
-        document.getElementById('bossDescription').value = boss.description || '';
         document.getElementById('bossRedditLink').value = boss.redditLink || '';
 
         // Change form to edit mode

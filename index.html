@@ -109,8 +109,23 @@
 
             <!-- Boss List -->
             <section class="boss-list">
-                <div id="bossContainer" class="boss-grid">
-                    <!-- Boss cards will be dynamically inserted here -->
+                <div class="table-container">
+                    <table id="bossTable" class="boss-table">
+                        <thead>
+                            <tr>
+                                <th>Status</th>
+                                <th>Name</th>
+                                <th>Level</th>
+                                <th>Difficulty</th>
+                                <th>Type</th>
+                                <th>Location</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bossTableBody">
+                            <!-- Boss rows will be dynamically inserted here -->
+                        </tbody>
+                    </table>
                 </div>
             </section>
         </div>
@@ -172,10 +187,6 @@
                     <input type="text" id="bossLocation" placeholder="e.g., Mossy Forest, Ruined Path">
                 </div>
                 
-                <div class="form-group">
-                    <label for="bossDescription">Description</label>
-                    <textarea id="bossDescription" placeholder="Additional details about the boss..."></textarea>
-                </div>
                 
                 <div class="form-group">
                     <label for="bossRedditLink">Reddit Link</label>
