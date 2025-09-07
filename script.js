@@ -532,20 +532,50 @@ class BossDatabase {
 
     // Abilities Section
     initializeAbilities() {
+        // Comprehensive abilities from Sword and Supper Wiki
         this.abilities = [
+            // Rage Abilities
             { name: "Add Rage On Heal", description: "Add rage whenever you heal.", category: "equipment" },
-            { name: "Boost Attack On High HP", description: "Boosts attack when HP is 100%.", category: "equipment" },
+            { name: "Add Rage On Crit", description: "Adds a small amount of rage each time you land a critical hit", category: "equipment" },
+            { name: "Add Rage On Hit 5", description: "Adds rage every 5 hits", category: "equipment" },
+            { name: "Add Rage on Enemy Death", description: "Gains rage when an enemy dies - great for dealing with big fights", category: "equipment" },
+            
+            // Shield Abilities
+            { name: "Gain Shield On Enemy Death", description: "Gains shield when an enemy dies", category: "equipment" },
+            { name: "Gain Shield On Hit 5", description: "Gains shield every 5 hits", category: "equipment" },
+            { name: "Gain Shield On Rage", description: "Gains shield when using rage abilities", category: "equipment" },
+            { name: "Gain Shield On Turn 4", description: "Gains shield on turn 4 of combat", category: "equipment" },
+            
+            // Healing Abilities
+            { name: "Heal On Target Death", description: "Heals when a target dies", category: "equipment" },
+            { name: "Heal Every Two Hits", description: "Heals every two hits landed", category: "equipment" },
             { name: "Critical Recovery", description: "Heal for 3% of Max HP whenever you land a critical hit.", category: "equipment" },
-            { name: "Dodge if Low", description: "Increases dodge chance by 20% when HP is below 30%.", category: "equipment" },
             { name: "Heal on Bolt", description: "Heal a small amount whenever a lightning bolt fires.", category: "equipment" },
+            { name: "Second Wind", description: "Heal for 10% of Max HP at the start of each of your next 3 turns the first time you dip below 30% HP.", category: "equipment" },
+            
+            // Lightning Abilities
             { name: "Lightning Bolt", description: "Zap your target with a lightning bolt at the start of your turn.", category: "temple" },
             { name: "Lightning On Attack", description: "When you attack, zap your target with a lightning bolt.", category: "equipment" },
             { name: "Lightning On Crit", description: "When you make a critical attack, zap your target with a lightning bolt.", category: "equipment" },
+            { name: "Lightning on Target Death", description: "Triggers lightning damage when a target dies", category: "equipment" },
+            
+            // Magic Knife Abilities
             { name: "Magic Knife", description: "Throw a magic knife at the start of your turn.", category: "temple" },
             { name: "Magic Knife on Crit", description: "Throw a magic knife whenever you make a critical attack.", category: "equipment" },
             { name: "Magic Knife On Rage", description: "On Rage activation, throw a magic knife.", category: "equipment" },
-            { name: "Second Wind", description: "Heal for 10% of Max HP at the start of each of your next 3 turns the first time you dip below 30% HP.", category: "equipment" },
-            { name: "Strike Twice Every Other", description: "Every other turn, attack twice with your main weapon.", category: "equipment" }
+            { name: "Magic Knife On Hit 3", description: "Throws magic knife every 3 hits", category: "equipment" },
+            { name: "Fire Knife On Attack", description: "Throws a fire knife when attacking", category: "equipment" },
+            
+            // Combat Abilities
+            { name: "Boost Attack On High HP", description: "Boosts attack when HP is 100%.", category: "equipment" },
+            { name: "Strike Twice Every Other", description: "Every other turn, attack twice with your main weapon.", category: "equipment" },
+            { name: "Dodge if Low", description: "Increases dodge chance by 20% when HP is below 30%.", category: "equipment" },
+            
+            // Temple Blessings
+            { name: "Blessing of Strength", description: "Increases attack power for the duration of the mission", category: "temple" },
+            { name: "Blessing of Protection", description: "Increases defense and reduces incoming damage", category: "temple" },
+            { name: "Blessing of Speed", description: "Increases movement and attack speed", category: "temple" },
+            { name: "Blessing of Fortune", description: "Increases critical hit chance and loot drops", category: "temple" }
         ];
         this.filteredAbilities = [...this.abilities];
         this.renderAbilities();
@@ -579,8 +609,74 @@ class BossDatabase {
 
     // Items Section
     initializeItems() {
-        this.items = [];
-        this.filteredItems = [];
+        // Initialize with some items from the Sword and Supper Wiki
+        this.items = [
+            {
+                id: 1,
+                name: "Amberfire Ring",
+                type: "accessory",
+                rarity: "rare",
+                description: "Grants the ability to throw a fire knife when attacking",
+                imageUrl: "",
+                goldValue: 500,
+                crit: 5,
+                dodge: 0,
+                fireResist: 0,
+                elecResist: 0,
+                source: "Equipment drop or crafting",
+                dateAdded: new Date().toISOString().split('T')[0],
+                submittedBy: "Wiki Data"
+            },
+            {
+                id: 2,
+                name: "Soulplate",
+                type: "armor",
+                rarity: "epic",
+                description: "Allows charging a shield by 20% of max HP when an enemy dies",
+                imageUrl: "",
+                goldValue: 750,
+                crit: 0,
+                dodge: 10,
+                fireResist: 15,
+                elecResist: 15,
+                source: "Boss drop or blueprint crafting",
+                dateAdded: new Date().toISOString().split('T')[0],
+                submittedBy: "Wiki Data"
+            },
+            {
+                id: 3,
+                name: "Ferocity Ring",
+                type: "accessory",
+                rarity: "uncommon",
+                description: "Adds rage each time you land a critical hit",
+                imageUrl: "",
+                goldValue: 300,
+                crit: 8,
+                dodge: 0,
+                fireResist: 0,
+                elecResist: 0,
+                source: "Equipment drop",
+                dateAdded: new Date().toISOString().split('T')[0],
+                submittedBy: "Wiki Data"
+            },
+            {
+                id: 4,
+                name: "Battlethirsty Vest",
+                type: "armor",
+                rarity: "rare",
+                description: "Crafted from Blueprint: Battlethirsty Vest, provides enhanced combat abilities",
+                imageUrl: "",
+                goldValue: 600,
+                crit: 3,
+                dodge: 5,
+                fireResist: 10,
+                elecResist: 10,
+                source: "Blueprint crafting (requires 320 Ore, 140 Wood)",
+                dateAdded: new Date().toISOString().split('T')[0],
+                submittedBy: "Wiki Data"
+            }
+        ];
+        this.filteredItems = [...this.items];
         this.renderItems();
     }
 
@@ -871,8 +967,19 @@ This item was submitted through the website and should be added to the database.
             const savedLevelGold = localStorage.getItem('swordAndSupperLevelGold');
             if (savedLevelGold) {
                 this.levelGoldCosts = JSON.parse(savedLevelGold);
-                this.renderLevelGoldCosts();
+            } else {
+                // Initialize with some example data from the wiki
+                this.levelGoldCosts = [
+                    {
+                        id: 1,
+                        level: 22,
+                        cost: 750,
+                        submittedBy: "Wiki Data",
+                        dateAdded: new Date().toISOString().split('T')[0]
+                    }
+                ];
             }
+            this.renderLevelGoldCosts();
         } catch (error) {
             console.error('Error loading level/gold from localStorage:', error);
         }
