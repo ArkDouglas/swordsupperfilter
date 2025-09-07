@@ -344,6 +344,10 @@ class BossDatabase {
                 </td>
                 <td>
                     <div class="table-actions">
+                        <button class="btn btn-small btn-success" onclick="bossDB.startMission('${boss.name}', '${boss.redditLink || '#'}')">
+                            <img src="images/startmission.png" alt="Start Mission" style="width: 16px; height: 16px; margin-right: 4px;">
+                            Start Mission
+                        </button>
                         ${boss.redditLink ? `<a href="${boss.redditLink}" target="_blank" class="btn btn-small btn-primary"><i class="fab fa-reddit"></i></a>` : ''}
                         <button class="btn btn-small btn-secondary" onclick="bossDB.editBoss(${boss.id})">
                             <i class="fas fa-edit"></i>
@@ -443,7 +447,7 @@ class BossDatabase {
             await this.submitInstanceToPublicDatabase(newBoss);
             
             this.closeModal();
-            this.showMessage('Instance submitted! GitHub issue opened for community review.', 'success');
+            this.showMessage('Instance added to community database!', 'success');
         } catch (error) {
             console.error('Error adding instance:', error);
             this.showMessage('Failed to add instance. Please try again.', 'error');
@@ -979,29 +983,40 @@ This instance was submitted through the website and should be added to the datab
 
     async submitInstanceToPublicDatabase(instance) {
         try {
-            // Create a GitHub issue with the instance data
-            const issueTitle = `New Instance: ${instance.name}`;
-            const issueBody = `**Instance Data:**
-\`\`\`json
-${JSON.stringify(instance, null, 2)}
-\`\`\`
+            // Submit directly to the public database via GitHub API
+            const response = await fetch('https://api.github.com/repos/ArkDouglas/swordsupperfilter/contents/data.json');
+            if (!response.ok) {
+                throw new Error('Failed to fetch current data');
+            }
+            
+            const data = await response.json();
+            const currentContent = JSON.parse(atob(data.content));
+            
+            // Add the new instance
+            currentContent.bosses.push(instance);
+            
+            // Update the file via GitHub API
+            const updateResponse = await fetch('https://api.github.com/repos/ArkDouglas/swordsupperfilter/contents/data.json', {
+                method: 'PUT',
+                headers: {
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: `Add new instance: ${instance.name}`,
+                    content: btoa(JSON.stringify(currentContent, null, 2)),
+                    sha: data.sha
+                })
+            });
 
-**Submitted by:** ${instance.submittedBy || 'Anonymous'}
-**Date:** ${new Date().toLocaleString()}
-
-This instance should be added to the database.`;
+            if (!updateResponse.ok) {
+                throw new Error('Failed to update database');
+            }
             
-            const issueUrl = `https://github.com/ArkDouglas/swordsupperfilter/issues/new?title=${encodeURIComponent(issueTitle)}&body=${encodeURIComponent(issueBody)}&labels=instance-submission`;
-            
-            // Open the GitHub issue in modal
-            this.openGitHubModal(issueUrl);
-            
-            // Add to local display so user sees it immediately
-            this.bosses.push(instance);
-            this.filteredBosses = [...this.bosses];
-            this.sortBosses();
-            this.updateStats();
+            // Refresh the local data to show the new instance
+            await this.loadData();
             this.renderBosses();
+            this.updateStats();
             
         } catch (error) {
             console.error('Error submitting instance:', error);
@@ -1024,18 +1039,30 @@ This instance should be added to the database.`;
         statusText.textContent = 'Login to GitHub';
     }
 
-    openGitHubModal(issueUrl) {
-        const modal = document.getElementById('githubModal');
-        const iframe = document.getElementById('githubIframe');
-        iframe.src = issueUrl;
+    openGameModal(instanceName, gameUrl) {
+        const modal = document.getElementById('gameModal');
+        const iframe = document.getElementById('gameIframe');
+        const title = document.getElementById('gameModalTitle');
+        title.textContent = `Start Mission: ${instanceName}`;
+        iframe.src = gameUrl;
         modal.style.display = 'block';
     }
 
-    closeGitHubModal() {
-        const modal = document.getElementById('githubModal');
-        const iframe = document.getElementById('githubIframe');
+    closeGameModal() {
+        const modal = document.getElementById('gameModal');
+        const iframe = document.getElementById('gameIframe');
         modal.style.display = 'none';
         iframe.src = ''; // Clear the iframe
+    }
+
+    startMission(instanceName, gameUrl) {
+        // For now, we'll use the Reddit link as the game URL
+        // In the future, this could be a direct game URL
+        if (gameUrl && gameUrl !== '#') {
+            this.openGameModal(instanceName, gameUrl);
+        } else {
+            this.showMessage('No game link available for this instance.', 'warning');
+        }
     }
 
     saveItemsToLocalStorage() {
@@ -1175,10 +1202,10 @@ GitHub is where developers share code and collaborate on projects.`;
     }
 }
 
-// Global function for closing GitHub modal
-function closeGitHubModal() {
+// Global function for closing game modal
+function closeGameModal() {
     if (window.bossDB) {
-        window.bossDB.closeGitHubModal();
+        window.bossDB.closeGameModal();
     }
 }
 
