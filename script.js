@@ -412,7 +412,7 @@ class BossDatabase {
         }
     }
 
-    handleAddBoss(e) {
+    async handleAddBoss(e) {
         e.preventDefault();
         
         const formData = new FormData(e.target);
@@ -442,7 +442,7 @@ class BossDatabase {
             await this.submitInstanceToPublicDatabase(newBoss);
             
             this.closeModal();
-            this.showMessage('Instance added to community database!', 'success');
+            this.showMessage('Instance submitted! GitHub issue opened for community review.', 'success');
         } catch (error) {
             console.error('Error adding instance:', error);
             this.showMessage('Failed to add instance. Please try again.', 'error');
@@ -978,44 +978,37 @@ This instance was submitted through the website and should be added to the datab
 
     async submitInstanceToPublicDatabase(instance) {
         try {
-            // Get current data from GitHub
-            const response = await fetch('https://api.github.com/repos/ArkDouglas/swordsupperfilter/contents/data.json');
-            if (!response.ok) {
-                throw new Error('Failed to fetch current data');
-            }
+            // For now, we'll use a webhook approach or GitHub Issues
+            // Since direct API writing requires authentication
             
-            const data = await response.json();
-            const currentContent = JSON.parse(atob(data.content));
-            
-            // Add the new instance
-            currentContent.bosses.push(instance);
-            
-            // Update the file via GitHub API
-            const updateResponse = await fetch('https://api.github.com/repos/ArkDouglas/swordsupperfilter/contents/data.json', {
-                method: 'PUT',
-                headers: {
-                    'Accept': 'application/vnd.github.v3+json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    message: `Add new instance: ${instance.name}`,
-                    content: btoa(JSON.stringify(currentContent, null, 2)),
-                    sha: data.sha
-                })
-            });
+            // Create a GitHub issue with the instance data
+            const issueTitle = `New Instance: ${instance.name}`;
+            const issueBody = `**Instance Data:**
+\`\`\`json
+${JSON.stringify(instance, null, 2)}
+\`\`\`
 
-            if (!updateResponse.ok) {
-                throw new Error('Failed to update database');
-            }
+**Submitted by:** ${instance.submittedBy || 'Anonymous'}
+**Date:** ${new Date().toLocaleString()}
+
+This instance should be added to the database.`;
             
-            // Refresh the local data to show the new instance
-            await this.loadData();
-            this.renderBosses();
+            const issueUrl = `https://github.com/ArkDouglas/swordsupperfilter/issues/new?title=${encodeURIComponent(issueTitle)}&body=${encodeURIComponent(issueBody)}&labels=instance-submission`;
+            
+            // Open the GitHub issue
+            window.open(issueUrl, '_blank');
+            
+            // For now, add to local display so user sees it immediately
+            // This will be replaced when the issue is processed
+            this.bosses.push(instance);
+            this.filteredBosses = [...this.bosses];
+            this.sortBosses();
             this.updateStats();
+            this.renderBosses();
             
         } catch (error) {
             console.error('Error submitting instance:', error);
-            throw error; // Re-throw so the calling function can handle it
+            throw error;
         }
     }
 
