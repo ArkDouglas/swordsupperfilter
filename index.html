@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sword and Supper - Boss Database</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1><i class="fas fa-dragon"></i> Sword and Supper - Boss Database</h1>
+            <p>A comprehensive collection of boss instances sorted by difficulty level</p>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <!-- Controls Section -->
+            <section class="controls">
+                <div class="search-filter">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Search bosses, locations, or descriptions...">
+                    </div>
+                    
+                    <div class="filters">
+                        <select id="levelFilter">
+                            <option value="">All Levels</option>
+                            <option value="1-5">Level 1-5</option>
+                            <option value="6-20">Level 6-20</option>
+                            <option value="21-40">Level 21-40</option>
+                            <option value="41-60">Level 41-60</option>
+                            <option value="61-80">Level 61-80</option>
+                            <option value="81-100">Level 81-100</option>
+                            <option value="101-120">Level 101-120</option>
+                            <option value="121-140">Level 121-140</option>
+                            <option value="141-160">Level 141-160</option>
+                            <option value="221-240">Level 221-240</option>
+                        </select>
+                        
+                        <select id="difficultyFilter">
+                            <option value="">All Difficulties</option>
+                            <option value="1">⭐ Easy</option>
+                            <option value="2">⭐ ⭐ Fair</option>
+                            <option value="3">⭐ ⭐ ⭐ Moderate</option>
+                            <option value="4">⭐ ⭐ ⭐ ⭐ Hard</option>
+                            <option value="5">⭐ ⭐ ⭐ ⭐ ⭐ Extreme</option>
+                        </select>
+                        
+                        <select id="typeFilter">
+                            <option value="">All Types</option>
+                            <option value="boss">Regular Boss</option>
+                            <option value="boss-rush">Boss Rush</option>
+                        </select>
+                        
+                        <select id="completionFilter">
+                            <option value="">All Bosses</option>
+                            <option value="completed">Completed</option>
+                            <option value="incomplete">Not Completed</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="sort-controls">
+                    <button class="btn btn-primary" id="addBossBtn">
+                        <i class="fas fa-plus"></i> Add New Boss
+                    </button>
+                    
+                    <button class="btn btn-secondary" id="clearCompletionsBtn" title="Clear all completion marks">
+                        <i class="fas fa-eraser"></i> Clear Completions
+                    </button>
+                    
+                    <div class="sort-options">
+                        <label>Sort by:</label>
+                        <select id="sortBy">
+                            <option value="level">Level Range</option>
+                            <option value="difficulty">Difficulty</option>
+                            <option value="name">Name</option>
+                            <option value="type">Type</option>
+                        </select>
+                        <button class="btn btn-secondary" id="sortOrder">
+                            <i class="fas fa-sort-amount-down"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Stats Section -->
+            <section class="stats">
+                <div class="stat-card">
+                    <h3 id="totalBosses">0</h3>
+                    <p>Total Bosses</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="bossRushes">0</h3>
+                    <p>Boss Rushes</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="averageDifficulty">0</h3>
+                    <p>Avg Difficulty</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="completionRate">0%</h3>
+                    <p>Completion Rate</p>
+                </div>
+            </section>
+
+            <!-- Boss List -->
+            <section class="boss-list">
+                <div id="bossContainer" class="boss-grid">
+                    <!-- Boss cards will be dynamically inserted here -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Add Boss Modal -->
+    <div id="addBossModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Boss</h2>
+                <span class="close">&times;</span>
+            </div>
+            <form id="addBossForm">
+                <div class="form-group">
+                    <label for="bossName">Boss Name *</label>
+                    <input type="text" id="bossName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="bossLevel">Level Range *</label>
+                    <select id="bossLevel" required>
+                        <option value="">Select Level Range</option>
+                        <option value="1-5">Level 1-5</option>
+                        <option value="6-20">Level 6-20</option>
+                        <option value="21-40">Level 21-40</option>
+                        <option value="41-60">Level 41-60</option>
+                        <option value="61-80">Level 61-80</option>
+                        <option value="81-100">Level 81-100</option>
+                        <option value="101-120">Level 101-120</option>
+                        <option value="121-140">Level 121-140</option>
+                        <option value="141-160">Level 141-160</option>
+                        <option value="221-240">Level 221-240</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="bossDifficulty">Difficulty *</label>
+                    <select id="bossDifficulty" required>
+                        <option value="">Select Difficulty</option>
+                        <option value="1">⭐ Easy</option>
+                        <option value="2">⭐ ⭐ Fair</option>
+                        <option value="3">⭐ ⭐ ⭐ Moderate</option>
+                        <option value="4">⭐ ⭐ ⭐ ⭐ Hard</option>
+                        <option value="5">⭐ ⭐ ⭐ ⭐ ⭐ Extreme</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="bossType">Type *</label>
+                    <select id="bossType" required>
+                        <option value="">Select Type</option>
+                        <option value="boss">Regular Boss</option>
+                        <option value="boss-rush">Boss Rush</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="bossLocation">Location</label>
+                    <input type="text" id="bossLocation" placeholder="e.g., Mossy Forest, Ruined Path">
+                </div>
+                
+                <div class="form-group">
+                    <label for="bossDescription">Description</label>
+                    <textarea id="bossDescription" placeholder="Additional details about the boss..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="bossRedditLink">Reddit Link</label>
+                    <input type="url" id="bossRedditLink" placeholder="https://www.reddit.com/r/SwordAndSupperGame/...">
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Boss</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Sword and Supper Boss Database. Contribute your discoveries!</p>
+            <p>Built with ❤️ for the Sword and Supper community</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
