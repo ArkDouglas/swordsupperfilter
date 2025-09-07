@@ -23,7 +23,6 @@ class BossDatabase {
         this.initializeItems();
         this.loadItemsFromLocalStorage();
         this.loadLevelGoldFromLocalStorage();
-        this.checkGitHubStatus();
     }
 
     async loadData() {
@@ -439,18 +438,11 @@ class BossDatabase {
         }
 
         try {
-            // Add to local database immediately
-            this.bosses.push(newBoss);
-            this.filteredBosses = [...this.bosses];
-            this.sortBosses();
-            this.updateStats();
-            this.renderBosses();
-            
-            // Save to localStorage for persistence
-            this.saveToLocalStorage();
+            // Submit directly to the public database via API
+            await this.submitInstanceToPublicDatabase(newBoss);
             
             this.closeModal();
-            this.showMessage('Instance added to database!', 'success');
+            this.showMessage('Instance added to community database!', 'success');
         } catch (error) {
             console.error('Error adding instance:', error);
             this.showMessage('Failed to add instance. Please try again.', 'error');
@@ -984,54 +976,49 @@ This instance was submitted through the website and should be added to the datab
     }
 
 
-    async submitInstanceToDatabase(instance) {
+    async submitInstanceToPublicDatabase(instance) {
         try {
-            // Add to local database immediately
-            this.bosses.push(instance);
-            this.filteredBosses = [...this.bosses];
-            this.sortBosses();
-            this.updateStats();
+            // Get current data from GitHub
+            const response = await fetch('https://api.github.com/repos/ArkDouglas/swordsupperfilter/contents/data.json');
+            if (!response.ok) {
+                throw new Error('Failed to fetch current data');
+            }
+            
+            const data = await response.json();
+            const currentContent = JSON.parse(atob(data.content));
+            
+            // Add the new instance
+            currentContent.bosses.push(instance);
+            
+            // Update the file via GitHub API
+            const updateResponse = await fetch('https://api.github.com/repos/ArkDouglas/swordsupperfilter/contents/data.json', {
+                method: 'PUT',
+                headers: {
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: `Add new instance: ${instance.name}`,
+                    content: btoa(JSON.stringify(currentContent, null, 2)),
+                    sha: data.sha
+                })
+            });
+
+            if (!updateResponse.ok) {
+                throw new Error('Failed to update database');
+            }
+            
+            // Refresh the local data to show the new instance
+            await this.loadData();
             this.renderBosses();
+            this.updateStats();
             
-            // Save to localStorage for persistence
-            this.saveToLocalStorage();
-            
-            this.showMessage('Instance added to database!', 'success');
         } catch (error) {
             console.error('Error submitting instance:', error);
-            this.showMessage('Failed to submit instance. Please try again.', 'error');
+            throw error; // Re-throw so the calling function can handle it
         }
     }
 
-    checkGitHubStatus() {
-        // Check if user is logged into GitHub
-        fetch('https://api.github.com/user', {
-            credentials: 'include'
-        })
-        .then(response => {
-            if (response.ok) {
-                this.updateGitHubStatus(true);
-            } else {
-                this.updateGitHubStatus(false);
-            }
-        })
-        .catch(() => {
-            this.updateGitHubStatus(false);
-        });
-    }
-
-    updateGitHubStatus(isLoggedIn) {
-        const statusElement = document.getElementById('githubStatus');
-        const statusText = document.getElementById('githubStatusText');
-        
-        if (isLoggedIn) {
-            statusElement.classList.add('logged-in');
-            statusText.textContent = 'Logged into GitHub';
-        } else {
-            statusElement.classList.remove('logged-in');
-            statusText.textContent = 'Not logged into GitHub';
-        }
-    }
 
     saveItemsToLocalStorage() {
         try {
@@ -1156,67 +1143,6 @@ This instance was submitted through the website and should be added to the datab
 
 // Initialize the application
 let bossDB;
-// Global function for GitHub contribution
-function openGitHubContribution() {
-    const issueTitle = 'New Instance Submission';
-    const issueBody = `Please provide the following information:
-
-**Instance Name:** 
-**Level Range:** 
-**Difficulty:** 
-**Instance Type:** (Boss/Normal Instance)
-**Location:** 
-**Description:** 
-**Reddit Link:** 
-**Submitted By:** 
-
-Additional Notes:
-`;
-
-    const issueUrl = `https://github.com/ArkDouglas/swordsupperfilter/issues/new?title=${encodeURIComponent(issueTitle)}&body=${encodeURIComponent(issueBody)}&labels=instance-submission`;
-    
-    // Check if user is logged into GitHub
-    fetch('https://api.github.com/user', {
-        credentials: 'include'
-    })
-    .then(response => {
-        if (response.ok) {
-            // User is logged in, open issue directly
-            window.open(issueUrl, '_blank');
-        } else {
-            // User is not logged in, show explanation
-            const message = `To contribute to the database, you'll need a GitHub account (it's free!).
-
-Click OK to:
-1. Go to GitHub.com
-2. Create a free account if you don't have one
-3. Log in
-4. Come back here and click "Contribute to Database" again
-
-GitHub is where developers share code and collaborate on projects.`;
-            
-            if (confirm(message)) {
-                window.open('https://github.com/join', '_blank');
-            }
-        }
-    })
-    .catch(() => {
-        // Error checking status, show explanation anyway
-        const message = `To contribute to the database, you'll need a GitHub account (it's free!).
-
-Click OK to:
-1. Go to GitHub.com
-2. Create a free account if you don't have one
-3. Log in
-4. Come back here and click "Contribute to Database" again
-
-GitHub is where developers share code and collaborate on projects.`;
-        
-        if (confirm(message)) {
-            window.open('https://github.com/join', '_blank');
-        }
-    });
-}
 
 document.addEventListener('DOMContentLoaded', () => {
     bossDB = new BossDatabase();
