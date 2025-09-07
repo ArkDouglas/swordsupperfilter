@@ -393,18 +393,11 @@ class BossDatabase {
             return;
         }
 
-        this.bosses.push(newBoss);
-        this.filteredBosses = [...this.bosses];
-        this.sortBosses();
-        this.updateStats();
         this.closeModal();
         
-        this.showMessage('Instance added locally! Submitting to database...', 'success');
+        this.showMessage('Submitting instance to community database...', 'success');
         
-        // Save to localStorage for persistence
-        this.saveToLocalStorage();
-        
-        // Submit to database for community access
+        // Submit to community database via GitHub Issues
         this.submitInstanceToDatabase(newBoss);
     }
 
@@ -930,7 +923,7 @@ This instance was submitted through the website and should be added to the datab
         // Open the GitHub issue creation page
         window.open(issueUrl, '_blank');
         
-        this.showMessage('Instance saved locally! A GitHub issue has opened - please submit it to add to the database.', 'info');
+        this.showMessage('GitHub issue opened! Please submit it to add this instance to the community database.', 'info');
     }
 
     saveItemsToLocalStorage() {
