@@ -306,7 +306,7 @@ class BossDatabase {
                 </td>
                     <td>
                         <div class="boss-type">
-                            ${iconHtml}${boss.type}
+                            ${iconHtml}${this.getDisplayType(boss)}
                             ${boss.hasRuinedPath ? '<img src="images/ruinedpath.png" alt="Ruined Path" class="mystery-icon">' : ''}
                             ${boss.hasIncreased ? '<img src="images/increased.png" alt="Increased" class="mystery-icon">' : ''}
                         </div>
@@ -363,6 +363,22 @@ class BossDatabase {
         if (difficulty === 'boss-rush') {
             return 'Boss Rush';
         } else if (instanceType === 'boss') {
+            return 'Regular Boss';
+        } else {
+            return 'Normal Instance';
+        }
+    }
+
+    getDisplayType(boss) {
+        // Handle new format with proper display text
+        if (boss.type === 'Boss Rush' || boss.type === 'Regular Boss' || boss.type === 'Normal Instance') {
+            return boss.type;
+        }
+        
+        // Handle old format - convert to display text
+        if (boss.difficulty === 'boss-rush') {
+            return 'Boss Rush';
+        } else if (boss.type === 'boss' || boss.instanceType === 'boss') {
             return 'Regular Boss';
         } else {
             return 'Normal Instance';
