@@ -399,10 +399,13 @@ class BossDatabase {
         this.updateStats();
         this.closeModal();
         
-        this.showMessage('Instance added successfully!', 'success');
+        this.showMessage('Instance added locally! Submitting to database...', 'success');
         
         // Save to localStorage for persistence
         this.saveToLocalStorage();
+        
+        // Submit to database for community access
+        this.submitInstanceToDatabase(newBoss);
     }
 
     editBoss(id) {
@@ -891,6 +894,36 @@ This item was submitted through the website and should be added to the database.
         this.showMessage('Item saved locally! Please submit via the GitHub issue that opened.', 'success');
     }
 
+    async submitInstanceToDatabase(instance) {
+        try {
+            // Use GitHub's repository dispatch API to trigger the workflow
+            const response = await fetch('https://api.github.com/repos/ArkDouglas/swordsupperfilter/dispatches', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    event_type: 'add-instance',
+                    client_payload: {
+                        instance: instance,
+                        timestamp: new Date().toISOString()
+                    }
+                })
+            });
+
+            if (response.ok) {
+                this.showMessage('Instance submitted to database successfully!', 'success');
+            } else {
+                throw new Error('Failed to submit to database');
+            }
+        } catch (error) {
+            console.error('Error submitting instance:', error);
+            // Fallback to GitHub Issues approach
+            this.submitInstanceToGitHub(instance);
+        }
+    }
+
     submitInstanceToGitHub(instance) {
         // Create a GitHub issue URL with the instance data
         const issueTitle = `Add new instance: ${instance.name}`;
@@ -921,7 +954,7 @@ This instance was submitted through the website and should be added to the datab
         // Open the GitHub issue creation page
         window.open(issueUrl, '_blank');
         
-        this.showMessage('Instance saved locally! Please submit via the GitHub issue that opened.', 'success');
+        this.showMessage('Instance saved locally! Please submit via the GitHub issue that opened.', 'info');
     }
 
     saveItemsToLocalStorage() {

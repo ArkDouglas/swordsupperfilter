@@ -1,0 +1,51 @@
+name: Add Instance to Database
+
+on:
+  repository_dispatch:
+    types: [add-instance]
+
+jobs:
+  add-instance:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          
+      - name: Add Instance to Database
+        run: |
+          # Get the instance data from the event
+          INSTANCE_DATA='${{ toJson(github.event.client_payload.instance) }}'
+          
+          echo "Adding instance: ${{ github.event.client_payload.instance.name }}"
+          
+          # Create a backup
+          cp data.json data.json.backup
+          
+          # Use Node.js to properly manipulate the JSON
+          node -e "
+          const fs = require('fs');
+          const data = JSON.parse(fs.readFileSync('data.json', 'utf8'));
+          const newInstance = ${{ toJson(github.event.client_payload.instance) }};
+          
+          // Add the new instance to the bosses array
+          data.bosses.push(newInstance);
+          
+          // Write back to file
+          fs.writeFileSync('data.json', JSON.stringify(data, null, 2));
+          console.log('Instance added to database successfully!');
+          "
+          
+          # Commit and push the changes
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add data.json
+          git commit -m "Add instance: ${{ github.event.client_payload.instance.name }}"
+          git push
+          
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
