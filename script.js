@@ -45,7 +45,9 @@ class BossDatabase {
         // Filter functionality
         document.getElementById('levelFilter').addEventListener('change', (e) => this.handleFilter());
         document.getElementById('difficultyFilter').addEventListener('change', (e) => this.handleFilter());
-        document.getElementById('typeFilter').addEventListener('change', (e) => this.handleFilter());
+        document.getElementById('typeFilterBoss').addEventListener('change', (e) => this.handleFilter());
+        document.getElementById('typeFilterBossRush').addEventListener('change', (e) => this.handleFilter());
+        document.getElementById('typeFilterNormal').addEventListener('change', (e) => this.handleFilter());
         document.getElementById('mysteryIconFilter').addEventListener('change', (e) => this.handleFilter());
         document.getElementById('completionFilter').addEventListener('change', (e) => this.handleFilter());
         document.getElementById('hideCompletedToggle').addEventListener('change', (e) => this.handleFilter());
@@ -133,7 +135,9 @@ class BossDatabase {
     handleFilter() {
         const levelFilter = document.getElementById('levelFilter').value;
         const difficultyFilter = document.getElementById('difficultyFilter').value;
-        const typeFilter = document.getElementById('typeFilter').value;
+        const typeFilterBoss = document.getElementById('typeFilterBoss').checked;
+        const typeFilterBossRush = document.getElementById('typeFilterBossRush').checked;
+        const typeFilterNormal = document.getElementById('typeFilterNormal').checked;
         const mysteryIconFilter = document.getElementById('mysteryIconFilter').value;
         const completionFilter = document.getElementById('completionFilter').value;
         const hideCompleted = document.getElementById('hideCompletedToggle').checked;
@@ -141,7 +145,24 @@ class BossDatabase {
         this.filteredBosses = this.bosses.filter(boss => {
             const levelMatch = !levelFilter || boss.level === levelFilter;
             const difficultyMatch = !difficultyFilter || boss.difficulty.toString() === difficultyFilter;
-            const typeMatch = !typeFilter || boss.type === typeFilter;
+            
+            // Type filter with checkboxes - if none checked, show all
+            const anyTypeChecked = typeFilterBoss || typeFilterBossRush || typeFilterNormal;
+            let typeMatch = !anyTypeChecked; // Show all if none checked
+            
+            if (anyTypeChecked) {
+                typeMatch = false;
+                if (typeFilterBoss && (boss.type === 'boss' || boss.instanceType === 'boss')) {
+                    typeMatch = true;
+                }
+                if (typeFilterBossRush && (boss.difficulty === 'boss-rush' || boss.type === 'Boss Rush')) {
+                    typeMatch = true;
+                }
+                if (typeFilterNormal && (boss.type === 'normal' || boss.instanceType === 'normal')) {
+                    typeMatch = true;
+                }
+            }
+            
             const completionMatch = !completionFilter || 
                 (completionFilter === 'completed' && this.completedBosses.has(boss.id)) ||
                 (completionFilter === 'incomplete' && !this.completedBosses.has(boss.id));
@@ -259,7 +280,13 @@ class BossDatabase {
         // Get appropriate icon - only show boss icon for actual bosses
         let iconHtml = '';
         if (isBoss) {
-            iconHtml = '<img src="images/bossicon.png" alt="Boss" class="boss-icon" style="width: 20px; height: 20px; display: inline-block;">';
+            if (isBossRush) {
+                // Boss rush shows 3 boss icons
+                iconHtml = '<img src="images/bossicon.png" alt="Boss" class="boss-icon" style="width: 20px; height: 20px; display: inline-block;"><img src="images/bossicon.png" alt="Boss" class="boss-icon" style="width: 20px; height: 20px; display: inline-block;"><img src="images/bossicon.png" alt="Boss" class="boss-icon" style="width: 20px; height: 20px; display: inline-block;">';
+            } else {
+                // Regular boss shows 1 boss icon
+                iconHtml = '<img src="images/bossicon.png" alt="Boss" class="boss-icon" style="width: 20px; height: 20px; display: inline-block;">';
+            }
         }
         
         

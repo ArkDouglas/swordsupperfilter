@@ -16,12 +16,7 @@
                     <p>A comprehensive fan-made database for Sword and Supper</p>
                 </div>
                 <div class="header-right">
-                    <div class="github-status">
-                        <div class="login-status">
-                            <i class="fab fa-github"></i>
-                            <span>Community Database</span>
-                        </div>
-                    </div>
+                    <p>Community Database</p>
                 </div>
             </div>
         </div>
@@ -83,11 +78,25 @@
                             <option value="5">⭐ ⭐ ⭐ ⭐ ⭐ Extreme</option>
                         </select>
                         
-                        <select id="typeFilter">
-                            <option value="">All Types</option>
-                            <option value="boss">Regular Boss</option>
-                            <option value="boss-rush">Boss Rush</option>
-                        </select>
+                        <div class="filter-checkboxes">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="typeFilterBoss" value="boss">
+                                <img src="images/bossicon.png" alt="Boss" class="filter-icon">
+                                Regular Boss
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="typeFilterBossRush" value="boss-rush">
+                                <img src="images/bossicon.png" alt="Boss" class="filter-icon">
+                                <img src="images/bossicon.png" alt="Boss" class="filter-icon">
+                                <img src="images/bossicon.png" alt="Boss" class="filter-icon">
+                                Boss Rush
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="typeFilterNormal" value="normal">
+                                <img src="images/itemicon.png" alt="Normal" class="filter-icon">
+                                Normal Instance
+                            </label>
+                        </div>
                         
                         <select id="mysteryIconFilter">
                             <option value="">All Properties</option>
